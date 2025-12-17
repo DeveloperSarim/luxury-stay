@@ -141,40 +141,54 @@ const ReceptionReservations = () => {
     setScannedReservation(null);
     
     if (!qrDataString || !qrDataString.trim()) {
+      setScanError('QR code data is empty');
       return;
     }
 
     try {
       // Try to parse as JSON first (if it's our QR code format)
-      let qrData = qrDataString;
+      let qrData = qrDataString.trim();
+      
+      // If it's already a JSON string, validate it
       try {
-        const parsed = JSON.parse(qrDataString);
+        const parsed = JSON.parse(qrData);
+        // Ensure it has required fields
+        if (!parsed.reservationId) {
+          throw new Error('Invalid QR code format: missing reservationId');
+        }
         qrData = JSON.stringify(parsed); // Re-stringify to ensure format
-      } catch (e) {
-        // If not JSON, use as is
+      } catch (parseError) {
+        // If not valid JSON, throw error
+        throw new Error('Invalid QR code format. Please scan a valid reservation QR code.');
       }
 
-      const response = await fetch('http://localhost:5000/api/reservations/scan-qr', {
+      // Use apiClient instead of direct fetch
+      const data = await apiFetch('/api/reservations/scan-qr', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ qrData }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Invalid QR code');
+      // Check if data is null (network error case)
+      if (!data) {
+        throw new Error('Network error. Please check your connection and try again.');
       }
 
-      setScannedReservation(data.reservation);
-      // Stop scanning after successful scan
-      if (html5QrCodeRef.current && isScanning) {
-        await stopScanning();
+      // Backend returns { reservation, isValid, message }
+      if (data.reservation) {
+        setScannedReservation(data.reservation);
+        // Stop scanning after successful scan
+        if (html5QrCodeRef.current && isScanning) {
+          await stopScanning();
+        }
+      } else if (data.message) {
+        throw new Error(data.message);
+      } else {
+        throw new Error('Invalid QR code response from server');
       }
     } catch (err) {
-      setScanError(err.message || 'Failed to scan QR code');
+      const errorMessage = err.message || 'Failed to scan QR code. Please try again.';
+      setScanError(errorMessage);
+      console.error('QR scan error:', err);
     }
   };
 
