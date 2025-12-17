@@ -1,0 +1,22 @@
+/* FAQ styles are imported from original CSS file */
+/* Custom overrides for React functionality */
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding: 0;
+}
+
+.faq-answer.open {
+  max-height: 500px;
+  padding: 0 0 1.5rem 0;
+}
+
+.faq-icon {
+  transition: transform 0.3s ease;
+}
+
+.faq-icon.open {
+  transform: rotate(180deg);
+}

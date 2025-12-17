@@ -1,0 +1,156 @@
+.hms-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f9fafb;
+  padding: 20px;
+}
+
+.hms-login-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 28px 24px 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  color: #111827;
+}
+
+.login-logo-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.login-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  display: block;
+}
+
+.hms-login-card h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #111827;
+  text-align: center;
+}
+
+.hms-login-card .subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.hms-login-card .field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.hms-login-card label {
+  font-size: 13px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.hms-login-card input,
+.hms-login-card select {
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 10px 14px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.hms-login-card input:focus,
+.hms-login-card select:focus {
+  border-color: #564ade;
+  box-shadow: 0 0 0 3px rgba(42, 60, 255, 0.1);
+}
+
+.hms-login-card input::placeholder {
+  color: #9ca3af;
+}
+
+.hms-login-card select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+}
+
+.primary-btn {
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 8px;
+  padding: 10px 16px;
+  border: none;
+  background: #564ade;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primary-btn:hover {
+  background: #1e2ecc;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(42, 60, 255, 0.3);
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 12px;
+  margin-top: 4px;
+  background: #fee2e2;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #fca5a5;
+}
+
+.input-error {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+}
+
+.field-error-text {
+  color: #dc2626;
+  font-size: 11px;
+  margin-top: 4px;
+  padding-left: 2px;
+}
+
+.switch-text {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.switch-text a {
+  color: #564ade;
+  text-decoration: underline;
+}
+
+.switch-text a:hover {
+  color: #1e2ecc;
+}
+
+@media (max-width: 480px) {
+  .hms-login-card {
+    padding: 22px 18px 18px;
+  }
+}
+
+

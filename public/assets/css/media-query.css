@@ -1,0 +1,867 @@
+@media (max-width: 1024px) {
+    .hero-section h1 {
+      font-size: 40px;
+    }
+    
+    .hero-slider-heading {
+      font-size: 38px;
+      margin-bottom: 15px;
+      padding: 0 15px;
+    }
+    
+    .hero-slider-heading .highlight-amount {
+      color: #ffffff;
+      font-size: 1em;
+    }
+    
+    .hero-main-headline {
+      font-size: 38px;
+    }
+    
+    .section-headline {
+      font-size: 32px;
+    }
+    
+    .opportunity-content,
+    .opportunity-intro,
+    .smart-alozie-story,
+    .opportunity-now {
+      font-size: 16px;
+    }
+    
+    .opportunity-goals li {
+      font-size: 16px;
+    }
+   
+  
+    .main-div {
+      border-bottom-right-radius: 120px;
+      border-bottom-left-radius: 120px;
+    }
+    .notedivs {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+    }
+    
+    .seminar-text h3 {
+      font-size: 28px;
+    }
+    
+    .anti-scam-text h4 {
+      font-size: 20px;
+    }
+    
+    .anti-scam-text p {
+      font-size: 16px;
+    }
+    
+    .slider-arrow {
+      width: 40px;
+      height: 40px;
+      font-size: 24px;
+    }
+    
+    .hero-slider-container {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      border-radius: 0;
+      overflow: hidden;
+    }
+    
+    .hero-slider-wrapper {
+      padding: 0;
+      gap: 15px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .hero-slide {
+      width: 100%;
+      min-width: 100%;
+      scroll-snap-align: start;
+    }
+  }
+
+
+
+  @media (max-width: 768px) {
+      iframe#youtubeFrame {
+          height: 270px;
+      }
+      .notediv {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+      img.youtubeplaybtn {
+
+        width: 40px;
+      }
+
+    .main-div {
+      border-bottom-right-radius: 50px !important;
+      border-bottom-left-radius: 50px !important;
+    }
+    .navlinks,
+    .header-button {
+      display: none;
+    }
+    .about-content {
+      margin-top: 30px;
+    }
+    .hero-section h1 {
+      font-size: 24px;
+    }
+    
+    .hero-slider-heading {
+      font-size: 26px;
+      margin-bottom: 15px;
+      padding: 0 15px;
+      line-height: 1.4;
+    }
+    
+    .hero-slider-heading .highlight-amount {
+      color: #ffffff;
+      font-size: 1em;
+    }
+    
+    .hero-section {
+      padding: 40px 0 20px 0;
+      margin-top: 40px;
+      gap: 0;
+    }
+    
+    .hero-section .container-main {
+      padding: 0 20px;
+    }
+    
+    .hero-slider-heading {
+      padding: 0;
+      margin-bottom: 30px;
+    }
+    
+    .hero-slider-container {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      border-radius: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    
+    .hero-slider-container::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+      background: transparent;
+    }
+    
+    .hero-slider-wrapper {
+      padding: 0;
+      gap: 0;
+      overflow: visible;
+      display: flex;
+      width: max-content;
+      min-width: 100%;
+      transition: none;
+      transform: none !important;
+      will-change: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+    }
+    
+    .hero-slide {
+      width: 100vw !important;
+      min-width: 100vw !important;
+      max-width: 100vw !important;
+      flex-shrink: 0;
+      scroll-snap-align: start;
+    }
+    
+    .hero-slide {
+      opacity: 1 !important;
+    }
+    
+    .hero-slide.active-slide {
+      transform: scale(1) !important;
+      box-shadow: none !important;
+      opacity: 1 !important;
+    }
+    
+    .slide-content {
+      border-radius: 0;
+      margin: 0;
+    }
+    
+    .slide-image {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+    }
+    
+    .hero-main-headline {
+      font-size: 32px;
+    }
+    
+    .section-headline {
+      font-size: 26px;
+    }
+    
+    .opportunity-section,
+    .success-story-section {
+      padding: 50px 0;
+      margin-top: 50px;
+    }
+    
+    .winning-team-section,
+    .power-of-healthcode-section,
+    .products-slider-section {
+      margin-top: 50px;
+    }
+    
+    .opportunity-content,
+    .opportunity-intro,
+    .smart-alozie-story,
+    .opportunity-now {
+      font-size: 16px;
+      padding: 0 15px;
+    }
+    
+    .opportunity-goals {
+      padding: 0 15px;
+    }
+    
+    .opportunity-goals li {
+      font-size: 16px;
+      line-height: 1.8;
+    }
+    
+    .section-intro {
+      font-size: 16px;
+      padding: 0 15px;
+    }
+    
+    .achievements-list {
+      padding: 0 15px;
+    }
+    
+    .achievements-list li {
+      font-size: 16px;
+    }
+    
+    
+    .slide-content {
+      border-radius: 15px;
+    }
+    
+    .slide-image {
+      border-radius: 15px;
+    }
+    
+    .seminar-text {
+      bottom: 20px;
+    }
+    
+    .seminar-text h3 {
+      font-size: 22px;
+    }
+    
+    .anti-scam-text {
+      left: 20px;
+    }
+    
+    .anti-scam-text h4 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    
+    .anti-scam-text p {
+      font-size: 14px;
+      margin-top: 15px;
+    }
+    
+    .slider-arrow {
+      width: 35px;
+      height: 35px;
+      font-size: 20px;
+    }
+    
+    .prev-arrow {
+      left: 10px;
+    }
+    
+    .next-arrow {
+      right: 10px;
+    }
+    
+    .slider-dots {
+      margin-top: 20px;
+      gap: 10px;
+    }
+    
+    .dot {
+      width: 10px;
+      height: 10px;
+    }
+    
+    .dot.active {
+      width: 12px;
+      height: 12px;
+    }
+    .hamburger {
+      display: flex;
+    }
+    .about-all-content p {
+      font-size: 16px;
+      line-height: 34px;
+    }
+  
+    .about-extra-content h4 {
+      font-size: 18px;
+    }
+  
+    .notediv {
+      font-size: 14px;
+    }
+  
+    .about-content h5 {
+      font-size: 18px;
+    }
+  
+    .video-controls {
+      padding: 7.735px;
+      border-radius: 33.84px;
+    }
+    .copyright-text p {
+      font-size: 12px;
+    }
+  
+    #playButton,
+    #pauseButton {
+      margin: 0px;
+    }
+  
+    .header-buttons a {
+      padding: 8.702px;
+      font-size: 14px;
+    }
+    p.content {
+      font-size: 12px;
+    }
+  
+    .about-all-content h6 {
+      font-size: 17px;
+      padding: 7.268px 8.176px;
+    }
+  
+    .about-content {
+      margin-bottom: 269px;
+    }
+  
+    .main-footer-section {
+  
+      border-top-right-radius: 50px;
+      border-top-left-radius: 50px;
+    }
+    .youtubevideo img {
+      border-radius: 23px;
+    }
+  }
+  
+  
+  
+  @media (max-width: 520px) {
+    .footer-section {
+      margin-top: 78px;
+    }
+    
+    .hero-main-headline {
+      font-size: 28px;
+    }
+    
+    .section-headline {
+      font-size: 22px;
+    }
+    
+    .opportunity-section,
+    .success-story-section {
+      padding: 40px 0;
+      margin-top: 50px;
+    }
+    
+    .winning-team-section,
+    .power-of-healthcode-section,
+    .products-slider-section {
+      margin-top: 50px;
+    }
+    
+    .opportunity-content,
+    .opportunity-intro,
+    .smart-alozie-story,
+    .opportunity-now {
+      font-size: 14px;
+    }
+    
+    .opportunity-goals li {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    
+    .section-intro {
+      font-size: 14px;
+    }
+    
+    .achievements-list li {
+      font-size: 14px;
+    }
+    .about-content {
+      margin-bottom: 200px;
+    }
+    
+    .seminar-text h3 {
+      font-size: 18px;
+    }
+    
+    .anti-scam-text h4 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    
+    .anti-scam-text p {
+      font-size: 12px;
+      margin-top: 12px;
+    }
+    
+    .slider-arrow {
+      width: 30px;
+      height: 30px;
+      font-size: 18px;
+    }
+    
+    .prev-arrow {
+      left: 5px;
+    }
+    
+    .next-arrow {
+      right: 5px;
+    }
+  
+    .video-controls p {
+      font-size: 12px;
+    }
+    .modal-content {
+      padding: 20px;
+    }
+  
+    .input-group {
+      flex-direction: column;
+    }
+  
+    div#modal {
+      padding: 14px;
+    }
+  
+    .modal input,
+    .modal select {
+      height: 36.299px;
+      border-radius: 6.988px;
+      font-size: 12px;
+    }
+  
+    .input-group {
+      gap: 0;
+    }
+  
+    .modal-content {
+      border-radius: 13px;
+    }
+  
+    .modal-content h2 {
+      margin-bottom: 15px;
+      font-size: 13.976px;
+    }
+  
+    button.buttons {
+      padding: 7.92px 17.237px;
+      border-radius: 23.293px;
+      font-size: 12px;
+    }
+  }
+  
+  @media (max-width: 1094px) {
+      .main-footer-section {
+          height: 560px;
+      }
+  }
+  @media (max-width: 917px) {
+      .main-footer-section {
+          height: 447px;
+      }
+      iframe#youtubeFrame {
+        height: 486px;
+    }
+  }
+  
+  @media (max-width: 774px) {
+      .main-footer-section {
+          height: 349px;
+      }
+      iframe#youtubeFrame {
+        height: 403px;
+    }
+  }
+  @media (max-width: 586px) {
+      .main-footer-section {
+          height: 283px;
+      }
+      iframe#youtubeFrame {
+        height: 266px;
+    }
+  }
+  @media (max-width: 420px) {
+      .controlsdiv {
+          gap:7px
+      }
+      .video-controls {
+          gap: 7px;
+      }
+  
+  }
+  @media (max-width: 397px) {
+      .main-footer-section {
+          height: 243px;
+      }
+
+      iframe#youtubeFrame {
+        height: 194px;
+    }
+
+      .container {
+          padding: 15px;
+      }
+      .header-buttons a{
+          font-size:7px
+      }
+      
+      p.content {
+          font-size: 10px;
+      }
+      .video-controls p{
+          font-size:10px
+      }
+  
+      .footer-section {
+          margin-top: 131px;
+      }
+      .about-content {
+          margin-bottom: 170px;
+      }
+      .copyright-text {
+          margin-top: 50px;
+      }
+      
+  
+  }
+
+/* Power of Healthcode Section Responsive */
+@media (max-width: 1024px) {
+  .healthcode-content-wrapper {
+    flex-direction: column;
+    gap: 25px;
+    justify-content: center;
+  }
+  
+  .healthcode-text-content {
+    padding: 0 15px;
+  }
+  
+  .healthcode-main-image,
+  .healthcode-down-image {
+    max-width: 280px;
+    max-height: 360px;
+  }
+  
+  .healthcode-banner {
+    padding: 45px 35px;
+  }
+  
+  .power-title {
+    font-size: 30px;
+    margin-bottom: 20px;
+  }
+  
+  .power-description {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 768px) {
+  .healthcode-banner {
+    padding: 40px 25px;
+  }
+  
+  .healthcode-content-wrapper {
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  .healthcode-image-left,
+  .healthcode-image-right {
+    width: 100%;
+  }
+  
+  .healthcode-text-content {
+    padding: 0 10px;
+    width: 100%;
+  }
+  
+  .healthcode-main-image,
+  .healthcode-down-image {
+    max-width: 250px;
+    max-height: 320px;
+  }
+  
+  .power-title {
+    font-size: 26px;
+    margin-bottom: 15px;
+  }
+  
+  .power-description {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 520px) {
+  .healthcode-banner {
+    padding: 30px 15px;
+  }
+  
+  .healthcode-content-wrapper {
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  .healthcode-image-left,
+  .healthcode-image-right {
+    width: 100%;
+  }
+  
+  .healthcode-text-content {
+    padding: 0 10px;
+    width: 100%;
+  }
+  
+  .healthcode-main-image,
+  .healthcode-down-image {
+    max-width: 200px;
+    max-height: 280px;
+  }
+  
+  .power-title {
+    font-size: 22px;
+    margin-bottom: 15px;
+    line-height: 1.2;
+  }
+  
+  .power-description {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+}
+
+/* Products Slider Responsive */
+@media (max-width: 1200px) {
+  .products-slider-wrapper {
+    gap: 15px;
+    padding: 30px 15px;
+  }
+  
+  .product-card {
+    flex: 0 0 260px;
+    width: 260px;
+    min-width: 260px;
+    max-width: 260px;
+  }
+  
+  .product-card.active-product {
+    flex: 0 0 320px;
+    width: 320px;
+    min-width: 320px;
+    max-width: 320px;
+  }
+  
+  .product-card-inner {
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .products-slider-section {
+    padding: 60px 0;
+  }
+  
+  .products-slider-wrapper {
+    gap: 12px;
+    padding: 30px 15px;
+    scroll-snap-type: x mandatory;
+  }
+  
+  .product-card {
+    flex: 0 0 240px;
+    width: 240px;
+    min-width: 240px;
+    max-width: 240px;
+    scroll-snap-align: center;
+  }
+  
+  .product-card.active-product {
+    flex: 0 0 300px;
+    width: 300px;
+    min-width: 300px;
+    max-width: 300px;
+  }
+  
+  .product-card-inner {
+    min-height: 480px;
+    padding: 25px 15px;
+  }
+  
+  .product-image {
+    min-height: 280px;
+    max-height: 320px;
+  }
+  
+  .product-img {
+    max-height: 300px;
+  }
+  
+  .product-card.active-product .product-image {
+    min-height: 320px;
+    max-height: 360px;
+  }
+  
+  .product-card.active-product .product-img {
+    max-height: 340px;
+  }
+}
+
+@media (max-width: 768px) {
+  .products-slider-section {
+    padding: 50px 0;
+  }
+  
+  .product-card {
+    flex: 0 0 220px;
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+  }
+  
+  .product-card.active-product {
+    flex: 0 0 280px;
+    width: 280px;
+    min-width: 280px;
+    max-width: 280px;
+  }
+  
+  .product-card-inner {
+    min-height: 450px;
+    padding: 20px 15px;
+  }
+  
+  .product-info-box {
+    padding: 12px 15px;
+  }
+  
+  .purple-box h4,
+  .orange-box h4 {
+    font-size: 14px;
+  }
+  
+  .purple-box p,
+  .orange-box p {
+    font-size: 11px;
+  }
+  
+  .product-image {
+    min-height: 250px;
+    max-height: 300px;
+  }
+  
+  .product-img {
+    max-height: 280px;
+  }
+  
+  .product-card.active-product .product-image {
+    min-height: 280px;
+    max-height: 320px;
+  }
+  
+  .product-card.active-product .product-img {
+    max-height: 300px;
+  }
+}
+
+@media (max-width: 520px) {
+  .products-slider-wrapper {
+    gap: 10px;
+    padding: 20px 10px;
+  }
+  
+  .product-card {
+    flex: 0 0 200px;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+  }
+  
+  .product-card.active-product {
+    flex: 0 0 260px;
+    width: 260px;
+    min-width: 260px;
+    max-width: 260px;
+  }
+  
+  .product-card-inner {
+    min-height: 420px;
+    padding: 20px 12px;
+  }
+  
+  .info-text {
+    font-size: 12px;
+  }
+  
+  .info-price {
+    font-size: 20px;
+  }
+  
+  .product-image {
+    min-height: 220px;
+    max-height: 280px;
+  }
+  
+  .product-img {
+    max-height: 260px;
+  }
+  
+  .product-card.active-product .product-image {
+    min-height: 250px;
+    max-height: 300px;
+  }
+  
+  .product-card.active-product .product-img {
+    max-height: 280px;
+  }
+}
