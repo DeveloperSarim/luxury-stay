@@ -25,7 +25,7 @@ const Rooms = () => {
           controller.abort();
         }, 8000); // 8 second timeout
 
-        const response = await fetch('http://localhost:5000/api/rooms', {
+        const response = await fetch('https://luxury-stay-backend.vercel.app/api/rooms', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
