@@ -1,0 +1,46 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap");
+
+@font-face {
+  font-family: grifter;
+  src: url("/assets/fonts/GRIFTER Bold 700.otf");
+}
+@font-face {
+  font-family: gilory-extra;
+  src: url("/assets/fonts/FontsFree-Net-Gilroy-ExtraBold.ttf");
+}
+@font-face {
+  font-family: gilory;
+  src: url("/assets/fonts/gilroy-regular.ttf");
+}
+@font-face {
+  font-family: gilory-semibold;
+  src: url("/assets/fonts/gilroy-semibold.ttf");
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.main-div {
+    background-image: url(/assets/images/herobgimg.png);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    height: auto;
+    border-bottom-right-radius: 150px;
+    border-bottom-left-radius: 150px;
+  }
+  
+  .container {
+    max-width: 950px;
+    margin: 0 auto;
+    padding: 25px;
+  }
+
+  .container-main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 25px;
+  }

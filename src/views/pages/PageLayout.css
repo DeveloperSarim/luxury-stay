@@ -1,0 +1,120 @@
+/* Common Page Layout Styles - All Pages Use This */
+.page-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background: #ffffff;
+  color: #000000;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Nav Positioning Fix */
+.page-wrapper .nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Page Content Spacing */
+.page-content {
+  width: 100%;
+  padding-top: 100px;
+}
+
+/* Hero Section */
+.page-hero-section {
+  width: 100%;
+  padding: 60px 20px 80px;
+  background: #ffffff;
+  position: relative;
+}
+
+.page-hero-wrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto !important;
+  text-align: center !important;
+  position: relative;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.page-hero-title {
+  margin: 0 auto !important;
+  margin-top: 20px !important;
+  margin-bottom: 0 !important;
+  text-align: center !important;
+  width: 100%;
+  max-width: 900px;
+}
+
+.page-hero-subtitle {
+  margin: 0 auto !important;
+  margin-top: 20px !important;
+  color: #666;
+  line-height: 1.6;
+  text-align: center !important;
+  width: 100%;
+  max-width: 700px;
+}
+
+/* Section Spacing */
+.page-section {
+  width: 100%;
+  padding: 80px 20px;
+  position: relative;
+}
+
+.page-section-large {
+  width: 100%;
+  padding: 100px 20px;
+  position: relative;
+}
+
+/* Container Fix */
+.page-container {
+  width: 100%;
+  max-width: 1632px;
+  margin: 0 auto;
+  padding-left: 16px;
+  padding-right: 16px;
+  position: relative;
+}
+
+.page-hero-section .page-container {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.page-container.big-container {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+@media (max-width: 768px) {
+  .page-hero-section {
+    padding: 120px 16px 80px;
+  }
+
+  .page-section {
+    padding: 60px 16px;
+  }
+
+  .page-section-large {
+    padding: 80px 16px;
+  }
+
+  .page-container.big-container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+

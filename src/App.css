@@ -1,0 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500&display=swap');
+@import '/stayscape-css/stayscape.webflow.shared.16593fff7.css';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.App {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* React-specific overrides */
+.nav-menu.active {
+  display: flex !important;
+}
