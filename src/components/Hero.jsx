@@ -387,7 +387,7 @@ const Hero = () => {
     const loadRooms = async () => {
       setLoadingRooms(true);
       try {
-        const response = await fetch('http://localhost:5000/api/rooms', {
+        const response = await fetch('https://luxury-stay-backend.vercel.app/api/rooms', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -516,7 +516,7 @@ const Hero = () => {
 
   const loadRoomAvailability = async (roomId, month, year) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/rooms/${roomId}/availability?month=${month}&year=${year}`);
+      const response = await fetch(`https://luxury-stay-backend.vercel.app/api/rooms/${roomId}/availability?month=${month}&year=${year}`);
       if (response.ok) {
         const data = await response.json();
         setSelectedRoomAvailability(data);
@@ -673,7 +673,7 @@ const Hero = () => {
       }
 
       // Submit booking to backend
-      const response = await fetch('http://localhost:5000/api/reservations/public', {
+      const response = await fetch('https://luxury-stay-backend.vercel.app/api/reservations/public', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1321,7 +1321,7 @@ const Hero = () => {
                 <h3 className="h3">No Rooms Available</h3>
                 <p className="medium-m">No rooms are currently available. Please check back later.</p>
                 <p style={{ fontSize: '12px', color: '#999', marginTop: '10px' }}>
-                  Make sure the backend server is running on http://localhost:5000
+                  Make sure the backend server is running on https://luxury-stay-backend.vercel.app
                 </p>
               </div>
             </div>

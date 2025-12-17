@@ -152,7 +152,7 @@ const ReceptionReservations = () => {
         // If not JSON, use as is
       }
 
-      const response = await fetch('http://localhost:5000/api/reservations/scan-qr', {
+      const response = await fetch('https://luxury-stay-backend.vercel.app/api/reservations/scan-qr', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
