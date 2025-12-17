@@ -25,6 +25,8 @@ const ReceptionReservations = () => {
   const [scanError, setScanError] = useState('');
   const [isScanning, setIsScanning] = useState(false);
   const [cameraId, setCameraId] = useState(null);
+  const [availableCameras, setAvailableCameras] = useState([]);
+  const [currentCameraIndex, setCurrentCameraIndex] = useState(0);
   const qrCodeRef = useRef(null);
   const html5QrCodeRef = useRef(null);
 
@@ -152,7 +154,7 @@ const ReceptionReservations = () => {
         // If not JSON, use as is
       }
 
-      const response = await fetch('https://luxury-stay-backend.vercel.app/api/reservations/scan-qr', {
+      const response = await fetch('http://localhost:5000/api/reservations/scan-qr', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -176,8 +178,28 @@ const ReceptionReservations = () => {
     }
   };
 
+  // Find back camera from available devices
+  const findBackCamera = (devices) => {
+    // Try to find back camera by label (common patterns)
+    const backCamera = devices.find(device => {
+      const label = device.label.toLowerCase();
+      return label.includes('back') || 
+             label.includes('rear') || 
+             label.includes('environment') ||
+             (label.includes('facing') && label.includes('back')) ||
+             label.includes('2') && devices.length > 1; // Usually back camera is second
+    });
+    
+    if (backCamera) {
+      return devices.indexOf(backCamera);
+    }
+    
+    // If no back camera found by label, use the last camera (usually back on mobile)
+    return devices.length > 1 ? devices.length - 1 : 0;
+  };
+
   // Start camera scanning
-  const startScanning = async () => {
+  const startScanning = async (cameraIndex = null) => {
     try {
       setScanError('');
       setIsScanning(true);
@@ -185,7 +207,30 @@ const ReceptionReservations = () => {
       // Get available cameras
       const devices = await Html5Qrcode.getCameras();
       if (devices && devices.length > 0) {
-        const selectedCameraId = cameraId || devices[0].id;
+        // Store available cameras
+        setAvailableCameras(devices);
+        
+        // Determine which camera to use
+        let selectedIndex;
+        if (cameraIndex !== null) {
+          selectedIndex = cameraIndex;
+        } else if (cameraId) {
+          // If cameraId is already set, find its index
+          selectedIndex = devices.findIndex(d => d.id === cameraId);
+          if (selectedIndex === -1) {
+            // Camera ID not found, use back camera
+            selectedIndex = findBackCamera(devices);
+          }
+        } else {
+          // Default: use back camera
+          selectedIndex = findBackCamera(devices);
+        }
+        
+        // Ensure index is valid
+        selectedIndex = Math.max(0, Math.min(selectedIndex, devices.length - 1));
+        setCurrentCameraIndex(selectedIndex);
+        
+        const selectedCameraId = devices[selectedIndex].id;
         setCameraId(selectedCameraId);
         
         const html5QrCode = new Html5Qrcode(qrCodeRef.current.id);
@@ -213,6 +258,29 @@ const ReceptionReservations = () => {
     } catch (err) {
       setScanError(err.message || 'Failed to start camera');
       setIsScanning(false);
+    }
+  };
+
+  // Switch between front and back camera
+  const switchCamera = async () => {
+    if (availableCameras.length <= 1) {
+      setScanError('Only one camera available');
+      return;
+    }
+    
+    try {
+      // Stop current camera
+      await stopScanning();
+      
+      // Switch to next camera
+      const nextIndex = (currentCameraIndex + 1) % availableCameras.length;
+      
+      // Small delay to ensure camera is stopped
+      setTimeout(() => {
+        startScanning(nextIndex);
+      }, 300);
+    } catch (err) {
+      setScanError(err.message || 'Failed to switch camera');
     }
   };
 
@@ -368,7 +436,14 @@ const ReceptionReservations = () => {
 
         {qrScannerOpen && (
           <div style={{ padding: '20px', background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-            <h4 style={{ marginBottom: '15px' }}>Scan QR Code with Camera</h4>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+              <h4 style={{ margin: 0 }}>Scan QR Code with Camera</h4>
+              {isScanning && availableCameras[currentCameraIndex] && (
+                <span style={{ fontSize: '12px', color: '#666', fontWeight: '500' }}>
+                  📷 {availableCameras[currentCameraIndex].label}
+                </span>
+              )}
+            </div>
             
             {/* Camera Scanner */}
             <div style={{ marginBottom: '20px' }}>
@@ -397,7 +472,27 @@ const ReceptionReservations = () => {
                 </div>
               )}
               {isScanning && (
-                <div style={{ textAlign: 'center', marginTop: '15px' }}>
+                <div style={{ textAlign: 'center', marginTop: '15px', display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                  {availableCameras.length > 1 && (
+                    <button
+                      type="button"
+                      className="table-btn"
+                      onClick={switchCamera}
+                      style={{ 
+                        padding: '10px 20px', 
+                        background: '#564ade', 
+                        borderColor: '#564ade', 
+                        color: '#ffffff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        fontSize: '14px'
+                      }}
+                      title={`Switch camera (Currently: ${availableCameras[currentCameraIndex]?.label || 'Camera ' + (currentCameraIndex + 1)})`}
+                    >
+                      🔄 Switch Camera
+                    </button>
+                  )}
                   <button
                     type="button"
                     className="table-btn"

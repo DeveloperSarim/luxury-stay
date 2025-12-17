@@ -17,8 +17,12 @@ const Nav = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+  const toggleMenu = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setMenuOpen(prev => !prev);
   };
 
   const handleLogout = () => {
@@ -93,6 +97,7 @@ const Nav = () => {
             className={`mobile-menu-btn ${menuOpen ? 'active' : ''}`}
             onClick={toggleMenu}
             aria-label="Toggle menu"
+            type="button"
           >
             <span></span>
             <span></span>
