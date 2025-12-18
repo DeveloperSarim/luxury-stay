@@ -1,7 +1,6 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import './Layout.css';
 import { useAuth } from '../../context/AuthContext.jsx';
-import ChatWidget from '../../components/ChatWidget.jsx';
 
 const Layout = () => {
   const { user, logout } = useAuth();
@@ -105,7 +104,6 @@ const Layout = () => {
           <Outlet />
         </main>
       </div>
-      <ChatWidget />
     </div>
   );
 };

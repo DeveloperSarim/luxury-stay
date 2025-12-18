@@ -16,7 +16,7 @@ export const useApiClient = () => {
         }, 10000);
       }
 
-      const res = await fetch(`http://localhost:5000${path}`, {
+      const res = await fetch(`https://luxury-stay-backend.vercel.app${path}`, {
         ...options,
         signal,
         headers: {

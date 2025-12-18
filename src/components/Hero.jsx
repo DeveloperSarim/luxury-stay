@@ -10,6 +10,7 @@ import './About.css';
 import './Location.css';
 import '../views/pages/Services.css';
 import '../views/pages/PageLayout.css';
+import '../views/pages/Rooms.css';
 import { validateName, validateEmail, validatePhone, validatePassword, validateDate, validateDateRange, validateNumber } from '../utils/validations.js';
 
 const Hero = () => {
@@ -192,7 +193,7 @@ const Hero = () => {
     const loadRooms = async () => {
       setLoadingRooms(true);
       try {
-        const response = await fetch('http://localhost:5000/api/rooms', {
+        const response = await fetch('https://luxury-stay-backend.vercel.app/api/rooms', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -321,7 +322,7 @@ const Hero = () => {
 
   const loadRoomAvailability = async (roomId, month, year) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/rooms/${roomId}/availability?month=${month}&year=${year}`);
+      const response = await fetch(`https://luxury-stay-backend.vercel.app/api/rooms/${roomId}/availability?month=${month}&year=${year}`);
       if (response.ok) {
         const data = await response.json();
         setSelectedRoomAvailability(data);
@@ -479,7 +480,7 @@ const Hero = () => {
       }
 
       // Submit booking to backend
-      const response = await fetch('http://localhost:5000/api/reservations/public', {
+      const response = await fetch('https://luxury-stay-backend.vercel.app/api/reservations/public', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1283,19 +1284,32 @@ const Hero = () => {
         </div>
       </section>
 
-      {/* Rooms Section */}
-      <section className="rooms-display-new" id="rooms" ref={(el) => { if (el) sectionsRef.current[1] = el; }}>
-        <div className="container-new">
-          <div className="section-header">
-            <span className="section-tag">Our Rooms</span>
-            <h2 className="section-title">Choose Your Perfect Stay</h2>
-            <p className="section-desc">Luxurious rooms designed for your comfort and relaxation</p>
+      {/* Rooms Section - From Rooms Page */}
+      <section className="page-hero-section rooms-hero-section" id="rooms" ref={(el) => { if (el) sectionsRef.current[1] = el; }}>
+        <div className="page-container">
+          <div className="page-hero-wrapper">
+            <div 
+              data-wf-caption-variant="black" 
+              className="caption"
+            >
+              <div className="caption-shape"></div>
+              <div className="regular-s">Our Rooms</div>
+            </div>
+            <h1 className="h1 page-hero-title">Luxury Accommodations</h1>
+            <p className="medium-m page-hero-subtitle">
+              Experience unparalleled comfort in our beautifully designed rooms, 
+              each thoughtfully curated for your perfect stay.
+            </p>
           </div>
-          
+        </div>
+      </section>
+
+      <section className="page-section rooms-list-section">
+        <div className="page-container big-container">
           {loadingRooms ? (
             <div className="rooms-loading-container">
               <div className="rooms-skeleton-grid">
-                {[1, 2, 3].map((idx) => (
+                {[1, 2, 3, 4, 5, 6].map((idx) => (
                   <div key={idx} className="room-skeleton-card">
                     <div className="skeleton-image"></div>
                     <div className="skeleton-content">
@@ -1314,81 +1328,128 @@ const Hero = () => {
                 <div className="empty-icon">🏨</div>
                 <h3 className="h3">No Rooms Available</h3>
                 <p className="medium-m">No rooms are currently available. Please check back later.</p>
-                <p style={{ fontSize: '12px', color: '#999', marginTop: '10px' }}>
-                  Make sure the backend server is running on http://localhost:5000
-                </p>
               </div>
             </div>
           ) : (
-            <div className="rooms-grid-new">
-              {availableRooms.map((room) => {
-                const statusBadge = getStatusBadge(room.status);
-                return (
-                  <div key={room._id} className="room-card-new">
-                    <div className="room-image-container-new">
-                      <div className="room-status-badge-new">
-                        <span className={`room-status-badge ${statusBadge.class}`}>
-                          {statusBadge.text}
-                        </span>
-                      </div>
-                      <img 
-                        src="/stayscape-images/68af08e429f80a100d6e6fb8_pexels-heyho-7195560.avif"
-                        alt={`Room ${room.roomNumber}`}
-                        className="room-image-new"
-                      />
-                    </div>
-                    <div className="room-info-new">
-                      <div className="room-header-new">
-                        <h3 className="room-title-new">Room {room.roomNumber}</h3>
-                        <span className="room-type-badge-new">{room.type}</span>
-                      </div>
-                      <p className="room-description-new">
-                        {room.description || `Beautiful ${room.type.toLowerCase()} room with modern amenities and stunning views.`}
-                      </p>
-                      <div className="room-details-new">
-                        <div className="room-detail-item-new">
-                          <img 
-                            src="/stayscape-images/68adc88e1f31e1e9f33be96c_Bed.svg"
-                            alt=""
-                            className="room-detail-icon-new"
-                          />
-                          <span>2 Guests</span>
+            <>
+              <div className="rooms-list-grid">
+                {availableRooms.slice(0, 4).map((room) => {
+                  const statusBadge = getStatusBadge(room.status);
+                  return (
+                    <div key={room._id} className="room-item-card">
+                      <div className="room-item-image-container">
+                        <div className="room-item-status-badge">
+                          <span className={`room-status ${statusBadge.class}`}>
+                            {statusBadge.text}
+                          </span>
                         </div>
-                        <div className="room-detail-item-new">
-                          <img 
-                            src="/stayscape-images/68adc88e591a81fed12cc109_Key.svg"
-                            alt=""
-                            className="room-detail-icon-new"
-                          />
-                          <span>${room.pricePerNight || 290}/night</span>
+                        <img 
+                          src="/stayscape-images/68af08e429f80a100d6e6fb8_pexels-heyho-7195560.avif"
+                          alt={`Room ${room.roomNumber}`}
+                          className="room-item-image"
+                        />
+                      </div>
+                      <div className="room-item-info">
+                        <div className="room-item-title-row">
+                          <h3 className="h3 room-item-title">Room {room.roomNumber}</h3>
+                          <span className="room-item-type">{room.type}</span>
                         </div>
-                        {room.floor && (
-                          <div className="room-detail-item-new">
-                            <span>Floor {room.floor}</span>
+                        <p className="medium-s room-item-desc">
+                          {room.description || `Beautiful ${room.type.toLowerCase()} room with modern amenities.`}
+                        </p>
+                        <div className="room-item-details">
+                          <div className="room-detail-item">
+                            <img 
+                              src="/stayscape-images/68adc88e1f31e1e9f33be96c_Bed.svg"
+                              alt=""
+                              className="icon room-detail-icon"
+                            />
+                            <span className="regular-xs">{room.capacity || 2} Guests</span>
+                          </div>
+                          <div className="room-detail-item">
+                            <img 
+                              src="/stayscape-images/68adc88e591a81fed12cc109_Key.svg"
+                              alt=""
+                              className="icon room-detail-icon"
+                            />
+                            <span className="regular-xs">${room.price || room.pricePerNight || 290}/night</span>
+                          </div>
+                        </div>
+                        {room.amenities && room.amenities.length > 0 && (
+                          <div className="room-item-tags">
+                            {room.amenities.slice(0, 3).map((amenity, idx) => (
+                              <span key={idx} className="room-tag">
+                                {amenity}
+                              </span>
+                            ))}
                           </div>
                         )}
+                        <Link 
+                          to={room.status === 'available' ? '/login' : '#'}
+                          className={`room-item-book-btn ${room.status !== 'available' ? 'room-item-book-btn-disabled' : ''}`}
+                        >
+                          <div className="black-button-icon-wrapper">
+                            <div className="button-icons">
+                              <img 
+                                src="/stayscape-images/68adc88e0d9ecf56a75aab0f_ArrowUpRight.svg"
+                                loading="lazy"
+                                alt=""
+                                className="icon button-icon"
+                              />
+                              <img 
+                                src="/stayscape-images/68aed3d0db1bb90e683bba6a_ArrowUpRight.svg"
+                                loading="lazy"
+                                alt=""
+                                className="icon button-icon absolute-icon"
+                              />
+                            </div>
+                          </div>
+                          <div className="medium-s button-text">
+                            {room.status === 'available' ? 'Book Now' : 'Unavailable'}
+                          </div>
+                        </Link>
                       </div>
-                      {room.amenities && room.amenities.length > 0 && (
-                        <div className="room-amenities-new">
-                          {room.amenities.slice(0, 4).map((amenity, idx) => (
-                            <span key={idx} className="amenity-tag-new">
-                              {amenity}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      <Link
-                        to="/login"
-                        className={`room-book-btn-new ${room.status !== 'available' ? 'disabled' : ''}`}
-                        style={{ textDecoration: 'none', display: 'block' }}
-                      >
-                        {room.status === 'available' ? 'Book Room' : 'Unavailable'}
-                      </Link>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+              {availableRooms.length > 4 && (
+                <div style={{ 
+                  textAlign: 'center', 
+                  marginTop: '40px',
+                  padding: '0 20px'
+                }}>
+                  <Link 
+                    to="/rooms"
+                    className="room-item-book-btn"
+                    style={{ 
+                      display: 'inline-flex',
+                      maxWidth: '200px',
+                      width: '100%',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <div className="black-button-icon-wrapper">
+                      <div className="button-icons">
+                        <img 
+                          src="/stayscape-images/68adc88e0d9ecf56a75aab0f_ArrowUpRight.svg"
+                          loading="lazy"
+                          alt=""
+                          className="icon button-icon"
+                        />
+                        <img 
+                          src="/stayscape-images/68aed3d0db1bb90e683bba6a_ArrowUpRight.svg"
+                          loading="lazy"
+                          alt=""
+                          className="icon button-icon absolute-icon"
+                        />
+                      </div>
+                    </div>
+                    <div className="medium-s button-text">See More</div>
+                  </Link>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>

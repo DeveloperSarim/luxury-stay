@@ -425,12 +425,12 @@ const ReceptionReservations = () => {
       <section className="card table-card">
         <div className="card-header">
           <h3>Reservations</h3>
-          <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+          <div className="card-header-actions">
             <button
               type="button"
               className="primary-btn"
               onClick={handleToggleScanner}
-              style={{ padding: '8px 16px', fontSize: '14px' }}
+              style={{ padding: '8px 16px', fontSize: '14px', whiteSpace: 'nowrap' }}
             >
               {qrScannerOpen ? '❌ Close Scanner' : '📱 Open QR Scanner'}
             </button>

@@ -52,6 +52,15 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.card-header-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .table-card .card-header h3 {
@@ -303,6 +312,52 @@ tbody tr:nth-child(even) {
   gap: 4px;
 }
 
+@media (max-width: 768px) {
+  .table-card .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .table-card .card-header > div {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .table-card .card-header button,
+  .table-card .card-header select {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    min-width: 800px;
+    font-size: 12px;
+  }
+
+  th, td {
+    padding: 8px 6px;
+    white-space: nowrap;
+  }
+
+  .status-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+
+  .table-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+}
+
 @media (max-width: 640px) {
   .dashboard-grid {
     grid-template-columns: repeat(1, minmax(0, 1fr));
@@ -312,9 +367,105 @@ tbody tr:nth-child(even) {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
 
+  .table-card .card-header {
+    padding: 12px;
+  }
+
+  .table-card .card-header h3 {
+    font-size: 14px;
+  }
+
+  .table-wrapper {
+    margin: 0 -16px;
+    padding: 0 16px;
+  }
+
+  table {
+    min-width: 700px;
+    font-size: 11px;
+  }
+
+  th, td {
+    padding: 6px 4px;
+  }
+
+  th {
+    font-size: 10px;
+  }
+
   .table-btn {
     padding: 5px 10px;
+    font-size: 10px;
+  }
+
+  .metric-value {
+    font-size: 20px;
+  }
+
+  .metric h3 {
+    font-size: 12px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    gap: 12px;
+  }
+
+  .card {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .table-card .card-header {
+    padding: 10px;
+  }
+
+  .table-card .card-header h3 {
+    font-size: 13px;
+  }
+
+  table {
+    min-width: 650px;
+    font-size: 10px;
+  }
+
+  th, td {
+    padding: 5px 3px;
+  }
+
+  th {
+    font-size: 9px;
+  }
+
+  td {
+    font-size: 10px;
+  }
+
+  .status-badge {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  .table-btn {
+    padding: 4px 8px;
+    font-size: 9px;
+  }
+
+  .metric-value {
+    font-size: 18px;
+  }
+
+  .metric h3 {
     font-size: 11px;
+  }
+
+  .metric-label {
+    font-size: 10px;
   }
 }
 

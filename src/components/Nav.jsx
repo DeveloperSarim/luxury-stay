@@ -46,7 +46,11 @@ const Nav = () => {
   ];
 
   return (
-    <nav className={`custom-navbar ${scrolled ? 'scrolled' : ''} ${menuOpen ? 'menu-open' : ''}`}>
+    <nav className={`custom-navbar ${scrolled ? 'scrolled' : ''} ${menuOpen ? 'menu-open' : ''}`} onClick={(e) => {
+      if (e.target === e.currentTarget) {
+        setMenuOpen(false);
+      }
+    }}>
       <div className="navbar-container">
         <Link to="/" className="navbar-logo" onClick={closeMenu}>
           <img 
@@ -95,9 +99,14 @@ const Nav = () => {
           {/* Mobile Menu Button */}
           <button 
             className={`mobile-menu-btn ${menuOpen ? 'active' : ''}`}
-            onClick={toggleMenu}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setMenuOpen(prev => !prev);
+            }}
             aria-label="Toggle menu"
             type="button"
+            aria-expanded={menuOpen}
           >
             <span></span>
             <span></span>

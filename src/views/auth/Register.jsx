@@ -132,7 +132,7 @@ const Register = () => {
     setLoading(true);
     try {
       // User registration endpoint
-      const res = await fetch('http://localhost:5000/api/auth/register-user', {
+      const res = await fetch('https://luxury-stay-backend.vercel.app/api/auth/register-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, phone: fullPhone, role }),
