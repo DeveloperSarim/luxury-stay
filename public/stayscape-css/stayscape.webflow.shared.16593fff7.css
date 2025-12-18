@@ -3161,7 +3161,7 @@ img {
   border-radius: var(--_sizes---radius--circle);
   background-color: var(--green);
   flex: none;
-  width: 6px;
+  width: 16px;
 }
 
 .person-block-image {
@@ -3169,7 +3169,7 @@ img {
   border: 1px solid var(--black-opacity--15);
   border-radius: var(--_sizes---radius--circle);
   object-fit: cover;
-  width: 48px;
+  width: 62px;
   display: block;
 }
 

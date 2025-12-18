@@ -1,6 +1,18 @@
 .about {
   padding: 5rem 0;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.about .w-layout-blockcontainer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .about-content {
@@ -8,13 +20,18 @@
   flex-direction: column;
   gap: 2rem;
   margin-bottom: 3rem;
+  align-items: center;
+  text-align: center;
 }
 
 .person-block {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   gap: 1rem;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 .person-block-content {
@@ -64,6 +81,8 @@
   color: #333;
   line-height: 1.6;
   max-width: 600px;
+  text-align: center;
+  margin: 0 auto;
 }
 
 /* Ticker animations */
@@ -139,11 +158,13 @@
 @media (min-width: 768px) {
   .about-content {
     flex-direction: row;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
   }
 
   .about-text {
     flex: 1;
+    text-align: center;
   }
 }
 

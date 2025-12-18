@@ -94,6 +94,18 @@
   background: #ffffff !important;
 }
 
+/* Make Location page text black */
+.location-page .caption-info-block-name,
+.location-page .caption-info-block-value {
+  color: #000000 !important;
+}
+
+.location-page .section-title,
+.location-page .regular-s,
+.location-page .h2 {
+  color: #000000 !important;
+}
+
 /* CTA Section */
 .location-cta-section {
   background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%) !important;

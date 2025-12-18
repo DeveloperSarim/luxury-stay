@@ -1,11 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import Nav from './Nav';
 import Footer from './Footer';
 import './Hero.css';
+import './Reviews.css';
+import './Features.css';
+import './About.css';
+import './Location.css';
+import '../views/pages/Services.css';
+import '../views/pages/PageLayout.css';
 import { validateName, validateEmail, validatePhone, validatePassword, validateDate, validateDateRange, validateNumber } from '../utils/validations.js';
 
 const Hero = () => {
+  const navigate = useNavigate();
   const [openFAQ, setOpenFAQ] = useState(null);
   const heroRef = useRef(null);
   const [availableRooms, setAvailableRooms] = useState([]);
@@ -33,78 +41,40 @@ const Hero = () => {
   const [selectedRoomAvailability, setSelectedRoomAvailability] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-  const cursorRef = useRef(null);
-  const cursorFollowerRef = useRef(null);
-  const cursorTrailRefs = useRef([]);
+  const [cursorPosition, setCursorPosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  const [followerPosition, setFollowerPosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  const [trailPositions, setTrailPositions] = useState(Array(8).fill({ x: window.innerWidth / 2, y: window.innerHeight / 2 }));
+  const [cursorHover, setCursorHover] = useState(false);
+  const [showCursor, setShowCursor] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const videoBgRef = useRef(null);
+  const sectionsRef = useRef([]);
+  const downloadLinkRef = useRef(null);
 
-  // GSAP Mouse Cursor Effects
+  // Check if device supports mouse (not touch)
   useEffect(() => {
-    // Check if device supports mouse (not touch) - less strict check
-    const isTouchDevice = 'ontouchstart' in window && window.innerWidth <= 1024;
-    const isSmallScreen = window.innerWidth <= 768;
-    
-    // Only disable on actual touch devices with small screens
-    if (isTouchDevice && isSmallScreen) {
-      return; // Don't add cursor effects on touch devices
-    }
-
-    // Create custom cursor elements
-    const cursor = document.createElement('div');
-    cursor.className = 'custom-cursor';
-    cursor.style.cssText = 'display: block !important; opacity: 1 !important; visibility: visible !important;';
-    cursorRef.current = cursor;
-    document.body.appendChild(cursor);
-
-    const cursorFollower = document.createElement('div');
-    cursorFollower.className = 'cursor-follower';
-    cursorFollower.style.cssText = 'display: block !important; opacity: 1 !important; visibility: visible !important;';
-    cursorFollowerRef.current = cursorFollower;
-    document.body.appendChild(cursorFollower);
-
-    // Create cursor trail dots
-    const trailCount = 8;
-    for (let i = 0; i < trailCount; i++) {
-      const trail = document.createElement('div');
-      trail.className = 'cursor-trail';
-      trail.style.opacity = (trailCount - i) / trailCount * 0.5;
-      trail.style.cssText += 'display: block !important; visibility: visible !important;';
-      document.body.appendChild(trail);
-      cursorTrailRefs.current.push(trail);
-    }
-    
-    // Add class to body to hide default cursor
-    document.body.classList.add('has-custom-cursor');
-    
-    // Force show cursor on page load
-    setTimeout(() => {
-      cursor.style.display = 'block';
-      cursor.style.opacity = '1';
-      cursor.style.visibility = 'visible';
-      cursorFollower.style.display = 'block';
-      cursorFollower.style.opacity = '1';
-      cursorFollower.style.visibility = 'visible';
-    }, 100);
-    
-    // Show cursor on first mouse move
-    const showCursorOnMove = () => {
-      cursor.style.display = 'block';
-      cursor.style.opacity = '1';
-      cursor.style.visibility = 'visible';
-      cursorFollower.style.display = 'block';
-      cursorFollower.style.opacity = '1';
-      cursorFollower.style.visibility = 'visible';
-      document.removeEventListener('mousemove', showCursorOnMove);
+    const checkTouchDevice = () => {
+      const isTouch = 'ontouchstart' in window && window.innerWidth <= 1024;
+      const isSmallScreen = window.innerWidth <= 768;
+      setIsTouchDevice(isTouch && isSmallScreen);
     };
-    document.addEventListener('mousemove', showCursorOnMove);
+    checkTouchDevice();
+    window.addEventListener('resize', checkTouchDevice);
+    return () => window.removeEventListener('resize', checkTouchDevice);
+  }, []);
+
+  // Cursor effects with React state
+  useEffect(() => {
+    if (isTouchDevice) return;
 
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
     let followerX = window.innerWidth / 2;
     let followerY = window.innerHeight / 2;
-    let trailPositions = cursorTrailRefs.current.map(() => ({ x: window.innerWidth / 2, y: window.innerHeight / 2 }));
+    let localTrailPositions = Array(8).fill({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
     let animationRunning = true;
 
-    // Smooth follower animation using requestAnimationFrame
+    // Smooth follower animation
     let followerFrameId;
     const animateFollower = () => {
       if (!animationRunning) return;
@@ -112,12 +82,10 @@ const Hero = () => {
       const diffX = mouseX - followerX;
       const diffY = mouseY - followerY;
       
-      followerX += diffX * 0.15; // Smooth interpolation
+      followerX += diffX * 0.15;
       followerY += diffY * 0.15;
       
-      cursorFollower.style.left = followerX + 'px';
-      cursorFollower.style.top = followerY + 'px';
-      cursorFollower.style.transform = 'translate(-50%, -50%)';
+      setFollowerPosition({ x: followerX, y: followerY });
       
       followerFrameId = requestAnimationFrame(animateFollower);
     };
@@ -128,18 +96,17 @@ const Hero = () => {
     const animateTrails = () => {
       if (!animationRunning) return;
       
-      cursorTrailRefs.current.forEach((trail, index) => {
+      const newTrailPositions = localTrailPositions.map((pos, index) => {
         const speed = 0.1 + (index * 0.02);
-        const diffX = mouseX - trailPositions[index].x;
-        const diffY = mouseY - trailPositions[index].y;
-        
-        trailPositions[index].x += diffX * speed;
-        trailPositions[index].y += diffY * speed;
-        
-        trail.style.left = trailPositions[index].x + 'px';
-        trail.style.top = trailPositions[index].y + 'px';
-        trail.style.transform = 'translate(-50%, -50%)';
+        const diffX = mouseX - pos.x;
+        const diffY = mouseY - pos.y;
+        return {
+          x: pos.x + diffX * speed,
+          y: pos.y + diffY * speed
+        };
       });
+      localTrailPositions = newTrailPositions;
+      setTrailPositions(newTrailPositions);
       
       trailFrameId = requestAnimationFrame(animateTrails);
     };
@@ -148,16 +115,10 @@ const Hero = () => {
     const handleMouseMove = (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
+      setCursorPosition({ x: mouseX, y: mouseY });
+      setShowCursor(true);
 
-      // Main cursor - EXACT position, instant update
-      cursor.style.left = mouseX + 'px';
-      cursor.style.top = mouseY + 'px';
-      cursor.style.display = 'block';
-      cursor.style.opacity = '1';
-      cursor.style.visibility = 'visible';
-      cursor.style.transform = 'translate(-50%, -50%)';
-
-      // Hero section parallax - only in hero section
+      // Hero section parallax
       const hero = heroRef.current;
       if (hero) {
         const rect = hero.getBoundingClientRect();
@@ -177,9 +138,8 @@ const Hero = () => {
           hero.style.setProperty('--mouse-x', `${percentX}%`);
           hero.style.setProperty('--mouse-y', `${percentY}%`);
           
-          const videoBg = hero.querySelector('.background-video');
-          if (videoBg) {
-            gsap.to(videoBg, {
+          if (videoBgRef.current) {
+            gsap.to(videoBgRef.current, {
               x: moveX,
               y: moveY,
               duration: 1,
@@ -189,9 +149,9 @@ const Hero = () => {
         }
       }
 
-      // Parallax effect on other sections
-      const sections = document.querySelectorAll('.features-new, .rooms-display-new, .about-new, .testimonials-new, .faq-new, .pricing-new, .location-new');
-      sections.forEach(section => {
+      // Parallax effect on other sections using refs
+      sectionsRef.current.forEach(section => {
+        if (!section) return;
         const rect = section.getBoundingClientRect();
         const isInSection = e.clientY >= rect.top && e.clientY <= rect.bottom && 
                            e.clientX >= rect.left && e.clientX <= rect.right;
@@ -202,7 +162,8 @@ const Hero = () => {
           const moveX = (x / rect.width - 0.5) * 10;
           const moveY = (y / rect.height - 0.5) * 10;
           
-          const cards = section.querySelectorAll('.feature-card-new, .room-card-new, .testimonial-card-new, .faq-item-new');
+          // Use refs for cards instead of querySelectorAll
+          const cards = Array.from(section.querySelectorAll('.feature-card-new, .room-card-new, .testimonial-card-new, .faq-item-new'));
           cards.forEach((card, index) => {
             const delay = index * 0.05;
             gsap.to(card, {
@@ -216,171 +177,15 @@ const Hero = () => {
       });
     };
 
-    // Hover effects on interactive elements - PURE PAGE PAR
-    const handleMouseEnter = (e) => {
-      cursor.classList.add('hover');
-      cursorFollower.classList.add('hover');
-      
-      gsap.to(cursor, {
-        scale: 1.3,
-        duration: 0.3,
-        ease: 'power2.out'
-      });
-      gsap.to(cursorFollower, {
-        scale: 1.2,
-        duration: 0.3,
-        ease: 'power2.out'
-      });
-    };
-
-    const handleMouseLeave = () => {
-      cursor.classList.remove('hover');
-      cursorFollower.classList.remove('hover');
-      
-      gsap.to(cursor, {
-        scale: 1,
-        duration: 0.3,
-        ease: 'power2.out'
-      });
-      gsap.to(cursorFollower, {
-        scale: 1,
-        duration: 0.3,
-        ease: 'power2.out'
-      });
-    };
-
-    // Magnetic effect for buttons
-    const handleMagneticHover = (e) => {
-      const element = e.currentTarget;
-      const rect = element.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      
-      const handleMagneticMove = (moveEvent) => {
-        const distanceX = moveEvent.clientX - centerX;
-        const distanceY = moveEvent.clientY - centerY;
-        const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-        const maxDistance = 100;
-        
-        if (distance < maxDistance) {
-          const force = (maxDistance - distance) / maxDistance;
-          const moveX = distanceX * force * 0.3;
-          const moveY = distanceY * force * 0.3;
-          
-          gsap.to(element, {
-            x: moveX,
-            y: moveY,
-            duration: 0.3,
-            ease: 'power2.out'
-          });
-        }
-      };
-
-      const handleMagneticLeave = () => {
-        gsap.to(element, {
-          x: 0,
-          y: 0,
-          duration: 0.5,
-          ease: 'elastic.out(1, 0.5)'
-        });
-        document.removeEventListener('mousemove', handleMagneticMove);
-        element.removeEventListener('mouseleave', handleMagneticLeave);
-      };
-
-      document.addEventListener('mousemove', handleMagneticMove);
-      element.addEventListener('mouseleave', handleMagneticLeave);
-    };
-
-    // Add hover effects to ALL interactive elements - PURE PAGE PAR
-    const updateInteractiveElements = () => {
-      const interactiveElements = document.querySelectorAll(
-        'a, button, .btn-primary, .btn-secondary, .menu-item, .room-card-new, .stat-item, .hero-badge, ' +
-        '.feature-card-new, .testimonial-card-new, .faq-item-new, .room-book-btn-new, ' +
-        '.footer-column a, .nav a, .logo, .icon-button, .menu-button'
-      );
-      
-      interactiveElements.forEach(el => {
-        el.removeEventListener('mouseenter', handleMouseEnter);
-        el.removeEventListener('mouseleave', handleMouseLeave);
-        el.addEventListener('mouseenter', handleMouseEnter);
-        el.addEventListener('mouseleave', handleMouseLeave);
-      });
-    };
-
-    // Initial setup
-    updateInteractiveElements();
-
-    // Update on DOM changes (for dynamic content)
-    const observer = new MutationObserver(() => {
-      updateInteractiveElements();
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    // Add magnetic effect to primary buttons and cards
-    const updateMagneticElements = () => {
-      const magneticElements = document.querySelectorAll(
-        '.btn-primary, .btn-secondary, .hero-badge, .stat-item, ' +
-        '.room-card-new, .feature-card-new, .testimonial-card-new'
-      );
-      
-      magneticElements.forEach(el => {
-        gsap.set(el, { x: 0, y: 0 });
-        el.removeEventListener('mouseenter', handleMagneticHover);
-        el.addEventListener('mouseenter', handleMagneticHover);
-      });
-    };
-
-    updateMagneticElements();
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    document.addEventListener('mousemove', handleMouseMove);
-
-    // Initial cursor position - center of screen - EXACT position
-    const initialX = window.innerWidth / 2;
-    const initialY = window.innerHeight / 2;
-    
-    cursor.style.left = initialX + 'px';
-    cursor.style.top = initialY + 'px';
-    cursor.style.transform = 'translate(-50%, -50%)';
-    cursor.style.opacity = '1';
-    cursor.style.display = 'block';
-    
-    cursorFollower.style.left = initialX + 'px';
-    cursorFollower.style.top = initialY + 'px';
-    cursorFollower.style.transform = 'translate(-50%, -50%)';
-    cursorFollower.style.opacity = '1';
-    cursorFollower.style.display = 'block';
-    
-    cursorTrailRefs.current.forEach((trail, index) => {
-      trail.style.left = initialX + 'px';
-      trail.style.top = initialY + 'px';
-      trail.style.transform = 'translate(-50%, -50%)';
-      trail.style.opacity = (8 - index) / 8 * 0.5;
-      trail.style.display = 'block';
-    });
-
-    // Show cursor immediately
-    cursor.style.display = 'block';
-    cursor.style.opacity = '1';
-    cursorFollower.style.display = 'block';
-    cursorFollower.style.opacity = '1';
+    window.addEventListener('mousemove', handleMouseMove);
 
     return () => {
       animationRunning = false;
       if (followerFrameId) cancelAnimationFrame(followerFrameId);
       if (trailFrameId) cancelAnimationFrame(trailFrameId);
-      document.removeEventListener('mousemove', handleMouseMove);
-      observer.disconnect();
-      document.body.classList.remove('has-custom-cursor');
-      if (cursor && cursor.parentNode) cursor.parentNode.removeChild(cursor);
-      if (cursorFollower && cursorFollower.parentNode) cursorFollower.parentNode.removeChild(cursorFollower);
-      cursorTrailRefs.current.forEach(trail => {
-        if (trail && trail.parentNode) trail.parentNode.removeChild(trail);
-      });
-      // Restore default cursor
-      document.body.style.cursor = '';
+      window.removeEventListener('mousemove', handleMouseMove);
     };
-  }, []);
+  }, [isTouchDevice]);
 
   // Load available rooms
   useEffect(() => {
@@ -604,12 +409,13 @@ const Hero = () => {
       doc.save(`booking-card-${bookingResult._id}.pdf`);
     } catch (err) {
       console.error('Failed to generate PDF:', err);
-      // Fallback: download QR code as image
+      // Fallback: download QR code as image using ref
       try {
-        const link = document.createElement('a');
-        link.href = bookingResult.qrCode;
-        link.download = `qr-code-${bookingResult._id}.png`;
-        link.click();
+        if (downloadLinkRef.current) {
+          downloadLinkRef.current.href = bookingResult.qrCode;
+          downloadLinkRef.current.download = `qr-code-${bookingResult._id}.png`;
+          downloadLinkRef.current.click();
+        }
       } catch (fallbackErr) {
         alert('Failed to download. Please try again.');
       }
@@ -773,13 +579,104 @@ const Hero = () => {
     { q: 'What amenities are included?', a: 'All basic amenities including WiFi, kitchen, linens, and toiletries are included.' },
   ];
 
+  // Hover handlers for cursor effects
+  const handleInteractiveMouseEnter = () => {
+    setCursorHover(true);
+  };
+
+  const handleInteractiveMouseLeave = () => {
+    setCursorHover(false);
+  };
+
+  // Magnetic effect handler
+  const handleMagneticHover = (e) => {
+    const element = e.currentTarget;
+    const rect = element.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    const handleMagneticMove = (moveEvent) => {
+      const distanceX = moveEvent.clientX - centerX;
+      const distanceY = moveEvent.clientY - centerY;
+      const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+      const maxDistance = 100;
+      
+      if (distance < maxDistance) {
+        const force = (maxDistance - distance) / maxDistance;
+        const moveX = distanceX * force * 0.3;
+        const moveY = distanceY * force * 0.3;
+        
+        gsap.to(element, {
+          x: moveX,
+          y: moveY,
+          duration: 0.3,
+          ease: 'power2.out'
+        });
+      }
+    };
+
+    const handleMagneticLeave = () => {
+      gsap.to(element, {
+        x: 0,
+        y: 0,
+        duration: 0.5,
+        ease: 'elastic.out(1, 0.5)'
+      });
+      window.removeEventListener('mousemove', handleMagneticMove);
+      element.removeEventListener('mouseleave', handleMagneticLeave);
+    };
+
+    window.addEventListener('mousemove', handleMagneticMove);
+    element.addEventListener('mouseleave', handleMagneticLeave);
+  };
+
   return (
-    <div className="new-landing-page">
+    <div className="new-landing-page" style={{ cursor: isTouchDevice ? 'default' : 'none' }}>
+      {/* Hidden download link for QR code fallback */}
+      <a ref={downloadLinkRef} style={{ display: 'none' }} />
+      {/* Custom Cursor - React Components */}
+      {!isTouchDevice && (
+        <>
+          <div
+            className={`custom-cursor ${cursorHover ? 'hover' : ''}`}
+            style={{
+              left: `${cursorPosition.x}px`,
+              top: `${cursorPosition.y}px`,
+              display: showCursor ? 'block' : 'none',
+              opacity: showCursor ? 1 : 0,
+              visibility: showCursor ? 'visible' : 'hidden',
+            }}
+          />
+          <div
+            className={`cursor-follower ${cursorHover ? 'hover' : ''}`}
+            style={{
+              left: `${followerPosition.x}px`,
+              top: `${followerPosition.y}px`,
+              display: showCursor ? 'block' : 'none',
+              opacity: showCursor ? 1 : 0,
+              visibility: showCursor ? 'visible' : 'hidden',
+            }}
+          />
+          {trailPositions.map((pos, index) => (
+            <div
+              key={index}
+              className="cursor-trail"
+              style={{
+                left: `${pos.x}px`,
+                top: `${pos.y}px`,
+                opacity: (8 - index) / 8 * 0.5,
+                display: showCursor ? 'block' : 'none',
+              }}
+            />
+          ))}
+        </>
+      )}
       {/* Hero Section */}
       <section className="hero-new" ref={heroRef}>
         <div className="hero-video-background">
           <div className="video-overlay"></div>
           <video
+            ref={videoBgRef}
             className="background-video"
             autoPlay
             loop
@@ -796,29 +693,75 @@ const Hero = () => {
         <Nav />
         <div className="hero-container">
           <div className="hero-content-new">
-            <div className="hero-badge">
+            <div 
+              className="hero-badge"
+              onMouseEnter={handleInteractiveMouseEnter}
+              onMouseLeave={handleInteractiveMouseLeave}
+              onMouseEnterCapture={handleMagneticHover}
+            >
               <span className="badge-icon">🏨</span>
               <span>Premium Luxury Hotel Experience</span>
             </div>
             <h1 className="hero-title">Luxury Stay Hotel</h1>
             <p className="hero-subtitle">Your perfect stay experience. Premium amenities, elegant rooms, and world-class service. Make your vacation unforgettable.</p>
             <div className="hero-stats">
-              <div className="stat-item" style={{ '--i': 0 }}>
+              <div 
+                className="stat-item" 
+                style={{ '--i': 0 }}
+                onMouseEnter={handleInteractiveMouseEnter}
+                onMouseLeave={handleInteractiveMouseLeave}
+                onMouseEnterCapture={handleMagneticHover}
+              >
                 <div className="stat-number">4.98</div>
                 <div className="stat-label">Rating</div>
               </div>
-              <div className="stat-item" style={{ '--i': 1 }}>
+              <div 
+                className="stat-item" 
+                style={{ '--i': 1 }}
+                onMouseEnter={handleInteractiveMouseEnter}
+                onMouseLeave={handleInteractiveMouseLeave}
+                onMouseEnterCapture={handleMagneticHover}
+              >
                 <div className="stat-number">200+</div>
                 <div className="stat-label">Happy Guests</div>
               </div>
-              <div className="stat-item" style={{ '--i': 2 }}>
+              <div 
+                className="stat-item" 
+                style={{ '--i': 2 }}
+                onMouseEnter={handleInteractiveMouseEnter}
+                onMouseLeave={handleInteractiveMouseLeave}
+                onMouseEnterCapture={handleMagneticHover}
+              >
                 <div className="stat-number">100%</div>
                 <div className="stat-label">Response Rate</div>
               </div>
             </div>
             <div className="hero-buttons">
-              <a href="#book" className="btn-primary">Book Now</a>
-              <a href="#gallery" className="btn-secondary">View Gallery</a>
+              <button 
+                type="button"
+                className="btn-primary"
+                onClick={() => {
+                  const roomsSection = document.getElementById('rooms');
+                  if (roomsSection) {
+                    roomsSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                onMouseEnter={handleInteractiveMouseEnter}
+                onMouseLeave={handleInteractiveMouseLeave}
+                onMouseEnterCapture={handleMagneticHover}
+              >
+                Book Now
+              </button>
+              <button 
+                type="button"
+                className="btn-secondary"
+                onClick={() => navigate('/gallery')}
+                onMouseEnter={handleInteractiveMouseEnter}
+                onMouseLeave={handleInteractiveMouseLeave}
+                onMouseEnterCapture={handleMagneticHover}
+              >
+                View Gallery
+              </button>
             </div>
           </div>
         </div>
@@ -1267,22 +1210,73 @@ const Hero = () => {
         </div>
       )}
 
-      {/* Features Section */}
-      <section className="features-new" id="features">
-        <div className="container-new">
-          <div className="section-header">
-            <span className="section-tag">Features</span>
-            <h2 className="section-title">Everything You Need for a Perfect Stay</h2>
-            <p className="section-desc">Premium amenities and thoughtful touches to make your stay comfortable</p>
+      {/* Services Section - Complete from Services Page */}
+      <section className="page-hero-section services-hero-section" id="features" ref={(el) => { if (el) sectionsRef.current[0] = el; }}>
+        <div className="page-container">
+          <div className="page-hero-wrapper">
+            <div 
+              data-wf-caption-variant="black" 
+              className="caption"
+            >
+              <div className="caption-shape"></div>
+              <div className="regular-s">Our Services</div>
+            </div>
+            <h1 className="h1 page-hero-title">Luxury Services & Amenities</h1>
+            <p className="medium-m page-hero-subtitle">
+              Experience world-class hospitality with our comprehensive range 
+              of premium services designed to make your stay unforgettable.
+            </p>
           </div>
-          <div className="features-grid-new">
-            {services.map((service, idx) => (
-              <div key={idx} className="feature-card-new">
-                <div className="feature-icon-wrapper">
-                  <img src={`/stayscape-images/${service.icon}`} alt={service.title} />
+        </div>
+      </section>
+
+      <section className="page-section services-list-section">
+        <div className="page-container big-container">
+          <div className="services-grid">
+            {[
+              {
+                icon: '68adc88e591a81fed12cc109_Key.svg',
+                title: '24/7 Concierge',
+                description: 'Round-the-clock assistance for all your needs and inquiries.',
+              },
+              {
+                icon: '68adc88e902a5d278c7f237e_SealCheck.svg',
+                title: 'Room Service',
+                description: 'Premium dining delivered directly to your room.',
+              },
+              {
+                icon: '68adc88e8bb01a90c7437f27_Armchair.svg',
+                title: 'Spa & Wellness',
+                description: 'Relax and rejuvenate with our luxury spa treatments.',
+              },
+              {
+                icon: '68adc88e1f31e1e9f33be96c_Bed.svg',
+                title: 'Housekeeping',
+                description: 'Daily housekeeping service to keep your space pristine.',
+              },
+              {
+                icon: '68adc88ee5136917326b20a1_MapPinSimpleLine.svg',
+                title: 'Airport Transfer',
+                description: 'Complimentary airport pickup and drop-off service.',
+              },
+              {
+                icon: '68adc88ed7a35067ec7bbb95_Eyes.svg',
+                title: 'Tour Guide',
+                description: 'Expert local guides for personalized city tours.',
+              },
+            ].map((service, idx) => (
+              <div key={idx} className="service-card">
+                <div className="service-card-icon-wrapper">
+                  <img 
+                    src={`/stayscape-images/${service.icon}`}
+                    alt={service.title}
+                    className="service-card-icon"
+                  />
                 </div>
-                <h3 className="feature-title">{service.title}</h3>
-                <p className="feature-desc">{service.desc}</p>
+                <h3 className="h3 service-card-title">{service.title}</h3>
+                <p className="medium-s service-card-description">
+                  {service.description}
+                </p>
               </div>
             ))}
           </div>
@@ -1290,7 +1284,7 @@ const Hero = () => {
       </section>
 
       {/* Rooms Section */}
-      <section className="rooms-display-new" id="rooms">
+      <section className="rooms-display-new" id="rooms" ref={(el) => { if (el) sectionsRef.current[1] = el; }}>
         <div className="container-new">
           <div className="section-header">
             <span className="section-tag">Our Rooms</span>
@@ -1383,13 +1377,13 @@ const Hero = () => {
                           ))}
                         </div>
                       )}
-                      <button
-                        onClick={() => handleBookRoom(room._id)}
+                      <Link
+                        to="/login"
                         className={`room-book-btn-new ${room.status !== 'available' ? 'disabled' : ''}`}
-                        disabled={room.status !== 'available'}
+                        style={{ textDecoration: 'none', display: 'block' }}
                       >
                         {room.status === 'available' ? 'Book Room' : 'Unavailable'}
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 );
@@ -1399,159 +1393,551 @@ const Hero = () => {
         </div>
       </section>
 
-      {/* About Section */}
-      <section className="about-new" id="about">
-        <div className="container-new">
-          <div className="about-content-new">
-            <div className="about-text">
-              <span className="section-tag">About</span>
-              <h2 className="section-title">Your Perfect NYC Experience Starts Here</h2>
-              <p className="about-desc">
-                Located in the prestigious Upper East Side, our luxury apartment offers the perfect blend of comfort, style, and convenience. 
-                Just steps from Central Park, world-class museums, and fine dining, you'll have everything NYC has to offer at your doorstep.
-              </p>
-              <p className="about-desc">
-                Our thoughtfully designed space features modern furnishings, premium amenities, and stunning city views. Whether you're visiting 
-                for business or pleasure, we've created an environment where you can relax, work, and make lasting memories.
-              </p>
-              <div className="about-highlights">
-                <div className="highlight-item">
-                  <span className="highlight-number">2</span>
-                  <span className="highlight-text">Bedrooms</span>
-                </div>
-                <div className="highlight-item">
-                  <span className="highlight-number">1</span>
-                  <span className="highlight-text">Bathroom</span>
-                </div>
-                <div className="highlight-item">
-                  <span className="highlight-number">6</span>
-                  <span className="highlight-text">Guests</span>
-                </div>
-                <div className="highlight-item">
-                  <span className="highlight-number">40th</span>
-                  <span className="highlight-text">Floor</span>
-                </div>
-              </div>
-            </div>
-            <div className="about-image">
-              <img src="/stayscape-images/68aee162cd5516fe1813c629_pexels-heyho-7195570_1.avif" alt="About" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="testimonials-new" id="reviews">
-        <div className="container-new">
-          <div className="section-header">
-            <span className="section-tag">Reviews</span>
-            <h2 className="section-title">What Our Guests Say</h2>
-            <p className="section-desc">Real experiences from travelers who stayed with us</p>
-          </div>
-          <div className="testimonials-grid-new">
-            {testimonials.map((testimonial, idx) => (
-              <div key={idx} className="testimonial-card-new">
-                <div className="testimonial-header">
-                  <img src={`/stayscape-images/${testimonial.img}`} alt={testimonial.name} />
-                  <div className="testimonial-info">
-                    <h4 className="testimonial-name">{testimonial.name}</h4>
-                    <p className="testimonial-location">{testimonial.location}</p>
+      {/* About Section - From About Component */}
+      
+      <section id="about" className="about" ref={(el) => { if (el) sectionsRef.current[2] = el; }}>
+      <div data-wf-caption-variant="black" className="caption">
+                    <div className="caption-shape"></div>
+                    <div className="regular-s">About</div>
                   </div>
-                  <div className="testimonial-rating">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <span key={i}>⭐</span>
-                    ))}
+        <div className="w-layout-blockcontainer container big-container w-container">
+          <div className="about-content">
+            <div className="person-block">
+              <div className="person-block-content">
+                <div className="person-block-image-wrapper">
+                  <img 
+                    src="/stayscape-images/68aefa9a474d7c66f0f99fa9_Benjamin Ross.avif" 
+                    loading="lazy" 
+                    alt="Benjamin Ross" 
+                    className="person-block-image"
+                  />
+                  <div className="person-block-status">
+                    <div className="person-block-status-circle"></div>
                   </div>
                 </div>
-                <p className="testimonial-text">"{testimonial.text}"</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="faq-new" id="faq">
-        <div className="container-new">
-          <div className="section-header">
-            <span className="section-tag">FAQ</span>
-            <h2 className="section-title">Frequently Asked Questions</h2>
-            <p className="section-desc">Everything you need to know before booking</p>
-          </div>
-          <div className="faq-list-new">
-            {faqs.map((faq, idx) => (
-              <div key={idx} className="faq-item-new">
-                <div 
-                  className={`faq-question-new ${openFAQ === idx ? 'active' : ''}`}
-                  onClick={() => setOpenFAQ(openFAQ === idx ? null : idx)}
-                >
-                  <h3>{faq.q}</h3>
-                  <span className="faq-icon">{openFAQ === idx ? '−' : '+'}</span>
-                </div>
-                <div className={`faq-answer-new ${openFAQ === idx ? 'active' : ''}`}>
-                  <p>{faq.a}</p>
+                <div className="person-block-info">
+                  <div className="medium-s">Sarim Yaseen</div>
+                  <div className="medium-s person-block-description">Hotel Owner</div>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section className="pricing-new" id="pricing">
-        <div className="container-new">
-          <div className="pricing-content-new">
-            <div className="pricing-info">
-              <span className="section-tag">Pricing</span>
-              <h2 className="section-title">Transparent Pricing, No Hidden Fees</h2>
-              <div className="price-display">
-                <span className="price-amount">$290</span>
-                <span className="price-period">/ night</span>
-              </div>
-              <p className="pricing-desc">All taxes and fees included. Book 30+ days in advance for 15% off!</p>
-              <ul className="pricing-features">
-                <li>✓ Free cancellation up to 48 hours</li>
-                <li>✓ No cleaning fees</li>
-                <li>✓ All amenities included</li>
-                <li>✓ 24/7 guest support</li>
-              </ul>
-              <a href="#book" className="btn-primary-large">Reserve Your Stay</a>
-            </div>
-            <div className="pricing-image">
-              <img src="/stayscape-images/68af1c93cb63694c6eaf9ddc_pexels-heyho-7195595.avif" alt="Pricing" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Location Section */}
-      <section className="location-new" id="location">
-        <div className="container-new">
-          <div className="section-header">
-            <span className="section-tag">Location</span>
-            <h2 className="section-title">Prime Location in Upper East Side</h2>
-            <p className="section-desc">Everything NYC has to offer is just minutes away</p>
-          </div>
-          <div className="location-content-new">
-            <div className="location-info">
-              <div className="location-detail">
-                <h4>Address</h4>
-                <p>953 5th Avenue, New York, NY 10021</p>
-              </div>
-              <div className="location-detail">
-                <h4>Neighborhood</h4>
-                <p>Upper East Side, Manhattan</p>
-              </div>
-              <div className="location-detail">
-                <h4>Nearby Attractions</h4>
-                <p>Central Park (2 min), The Met (5 min), Museum Mile (3 min)</p>
-              </div>
-              <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" className="btn-secondary">
-                View on Map
+              <a 
+                href="tel:+12125550199" 
+                className="icon-button w-variant-5486c117-8f56-ac61-d2f9-9007614520f0 w-inline-block"
+                data-wf-icon-button-variant="small"
+              >
+                <img 
+                  src="/stayscape-images/68adc88e35a0c25f1799232d_PhoneCall.svg" 
+                  loading="lazy" 
+                  alt="Phone" 
+                  className="icon icon-button-icon w-variant-5486c117-8f56-ac61-d2f9-9007614520f0"
+                />
               </a>
             </div>
-            <div className="location-map">
-              <img src="/stayscape-images/68b16f7e83d311c06ce2c781_Map.avif" alt="Map" />
+            
+            <p className="medium-m about-text">
+              "Hi, I'm Sarim. Luxury Stay is a luxurious hotel in the heart of the city, 
+              with beautiful rooms, great amenities, and a friendly staff.
+              We are committed to providing a comfortable and memorable stay for our guests."
+            </p>
+          </div>
+        </div>
+        
+        <div className="ticker">
+          <div className="ticker-item ticker-move-left">
+            <div className="ticker-line move-left-line">
+              {[
+                { icon: '68adc88e591a81fed12cc109_Key.svg', text: 'Great check-in' },
+                { icon: '68adc88e902a5d278c7f237e_SealCheck.svg', text: 'Responsive host' },
+                { icon: '68adc88e8bb01a90c7437f27_Armchair.svg', text: 'Beautiful interior' },
+                { icon: '68adc88e1f31e1e9f33be96c_Bed.svg', text: 'Comfortable beds' },
+              ].map((feature, idx) => (
+                <div key={idx} className="big-pill">
+                  <div className="big-pill-icon-wrapper">
+                    <img 
+                      src={`/stayscape-images/${feature.icon}`}
+                      loading="lazy" 
+                      alt="" 
+                      className="icon big-pill-icon"
+                    />
+                  </div>
+                  <div className="regular-l big-pill-text">{feature.text}</div>
+                </div>
+              ))}
+            </div>
+            <div className="ticker-line move-left-line">
+              {[
+                { icon: '68adc88e591a81fed12cc109_Key.svg', text: 'Great check-in' },
+                { icon: '68adc88e902a5d278c7f237e_SealCheck.svg', text: 'Responsive host' },
+                { icon: '68adc88e8bb01a90c7437f27_Armchair.svg', text: 'Beautiful interior' },
+                { icon: '68adc88e1f31e1e9f33be96c_Bed.svg', text: 'Comfortable beds' },
+              ].map((feature, idx) => (
+                <div key={`dup-${idx}`} className="big-pill">
+                  <div className="big-pill-icon-wrapper">
+                    <img 
+                      src={`/stayscape-images/${feature.icon}`}
+                      loading="lazy" 
+                      alt="" 
+                      className="icon big-pill-icon"
+                    />
+                  </div>
+                  <div className="regular-l big-pill-text">{feature.text}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="ticker-item ticker-move-right">
+            <div className="ticker-line move-right-line">
+              {[
+                { icon: '68adc88ee5136917326b20a1_MapPinSimpleLine.svg', text: 'Great location' },
+                { icon: '68adc88e591a81fed12cc101_Star-1.svg', text: 'Beautiful and walkable' },
+                { icon: '68adc88ed7a35067ec7bbb95_Eyes.svg', text: 'Stunning views' },
+                { icon: '68adc88ed2e2c254725cbff9_Image.svg', text: 'Scenic and peaceful' },
+              ].map((feature, idx) => (
+                <div key={idx} className="big-pill">
+                  <div className="big-pill-icon-wrapper">
+                    <img 
+                      src={`/stayscape-images/${feature.icon}`}
+                      loading="lazy" 
+                      alt="" 
+                      className="icon big-pill-icon"
+                    />
+                  </div>
+                  <div className="regular-l big-pill-text">{feature.text}</div>
+                </div>
+              ))}
+            </div>
+            <div className="ticker-line move-right-line">
+              {[
+                { icon: '68adc88ee5136917326b20a1_MapPinSimpleLine.svg', text: 'Great location' },
+                { icon: '68adc88e591a81fed12cc101_Star-1.svg', text: 'Beautiful and walkable' },
+                { icon: '68adc88ed7a35067ec7bbb95_Eyes.svg', text: 'Stunning views' },
+                { icon: '68adc88ed2e2c254725cbff9_Image.svg', text: 'Scenic and peaceful' },
+              ].map((feature, idx) => (
+                <div key={`dup-${idx}`} className="big-pill">
+                  <div className="big-pill-icon-wrapper">
+                    <img 
+                      src={`/stayscape-images/${feature.icon}`}
+                      loading="lazy" 
+                      alt="" 
+                      className="icon big-pill-icon"
+                    />
+                  </div>
+                  <div className="regular-l big-pill-text">{feature.text}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Reviews Section - Static from Reviews Component */}
+      <section id="reviews" className="reviews" ref={(el) => { if (el) sectionsRef.current[3] = el; }}>
+        <div className="w-layout-blockcontainer container big-container w-container">
+          <div className="reviews-content">
+            <div className="reviews-info">
+              <div className="reviews-details">
+                <div className="reviews-caption-and-rating">
+                  <div data-wf-caption-variant="black" className="caption">
+                    <div className="caption-shape"></div>
+                    <div className="regular-s">Reviews</div>
+                  </div>
+                  <div className="reviews-rating">
+                    <img 
+                      src="/stayscape-images/68adc88ecb304dc88d339c88_Wreath-Left.svg" 
+                      loading="lazy" 
+                      alt="" 
+                      className="reviews-rating-icon"
+                    />
+                    <div className="regular-xl">4.98</div>
+                    <img 
+                      src="/stayscape-images/68adc88e0cc8b26eadb21e5b_Wreath-Right.svg" 
+                      loading="lazy" 
+                      alt="" 
+                      className="reviews-rating-icon"
+                    />
+                  </div>
+                </div>
+                <p className="medium-m reviews-description">
+                  We're proud to deliver a stay that guests consistently love.
+                </p>
+              </div>
+              
+              <div className="small-review-blocks">
+                <div className="small-review-block-wrapper first-block">
+                  <div className="small-review-block">
+                    <div className="medium-m">4.9</div>
+                    <div className="medium-xs small-review-block-description">Cleanliness</div>
+                  </div>
+                </div>
+                <div className="small-review-blocks-divider"></div>
+                <div className="small-review-block-wrapper second-block">
+                  <div className="small-review-block">
+                    <div className="medium-m">5.0</div>
+                    <div className="medium-xs small-review-block-description">Accuracy</div>
+                  </div>
+                </div>
+                <div className="small-review-blocks-divider mobile-hide"></div>
+                <div className="small-review-block-wrapper third-block">
+                  <div className="small-review-block">
+                    <div className="medium-m">5.0</div>
+                    <div className="medium-xs small-review-block-description">Check-in</div>
+                  </div>
+                </div>
+                <div className="small-review-blocks-divider"></div>
+                <div className="small-review-block-wrapper fourth-block">
+                  <div className="small-review-block">
+                    <div className="medium-m">5.0</div>
+                    <div className="medium-xs small-review-block-description">Communication</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="review-blocks-wrapper">
+              <div className="review-blocks">
+                {[
+                  [
+                    { name: 'Andrew K.', location: 'Zwolle, Netherlands', img: '68b1541ea146667517f34f9a_Andrew K..avif', text: 'Felt like a true home away from home! The apartment was spotless, beautifully decorated, and just steps from Central Park. The host was super responsive – I\'d definitely stay again.', date: 'Aug 28, 2025' },
+                    { name: 'Lina S.', location: 'Berlin, Germany', img: '68b1541e0bb057d0b74f730c_Lina S..avif', text: 'Perfect spot for exploring lively New York! Central Park is minutes away, the subway close, and the apartment was cozy and stylish. Love it!', date: 'Aug 13, 2025' },
+                    { name: 'William N.', location: 'Paphos, Cyprus', img: '68b1541ec891d0fa1c56a790_William N..avif', text: 'Stylish apartment with everything I needed. The host was quick to respond, making check-in super easy. Would recommend to anyone in New York.', date: 'Jul 20, 2025' },
+                  ],
+                  [
+                    { name: 'Patrick T.', location: 'Warsaw, Poland', img: '68b1541e90a6e7759fb1eccf_Patrick T..avif', text: 'Amazing location on 5th Avenue! Central Park is a short walk away, and the apartment was safe, clean, and welcoming. The stylish design made it a perfect base to explore the city – truly a gem!', date: 'Jul 03, 2025' },
+                    { name: 'Sofia W.', location: 'Rome, Italy', img: '68b1541e664aeb75a3835bab_Sofia W..avif', text: 'Such a comfortable stay! The beds were great, the apartment was quiet, and the host made check-in super easy. With a 100% response rate, communication was smooth and stress-free. Can\'t wait to return again soon!', date: 'Jun 08, 2025' },
+                    { name: 'Julian M.', location: 'Havana, Cuba', img: '68b1541ea146667517f34f97_Julian M..avif', text: 'Fantastic stay! Cozy, spotless, and perfectly located. The photos don\'t do it justice – it\'s even better in person. Everything was so comfortable and well-prepared, and I\'ll definitely be back.', date: 'May 17, 2025' },
+                  ],
+                  [
+                    { name: 'Inessa J.', location: 'Vienna, Austria', img: '68b1541e627dd85661f7583e_Inessa J..avif', text: 'Great value for the location. Comfortable beds, modern decor, and the subway is so close by. Ideal choice for a weekend in the city.', date: 'Apr 10, 2025' },
+                    { name: 'Michael B.', location: 'Porto, Portugal', img: '68b1541e88243f69605f23fd_Michael B..avif', text: 'Superhost service all the way. The place was beautiful, communication was instant, and I felt right at home from the start. The atmosphere was so welcoming. Five stars without a doubt!', date: 'Mar 17, 2025' },
+                    { name: 'Scarlett A.', location: 'Dublin, Ireland', img: '68b15685b0d868816c62e655_Scarlett A..avif', text: 'Wonderful stay in the heart of New York! The apartment was spotless, cozy, and had everything I needed. The host was friendly and responsive, which made the whole trip stress-free.', date: 'Feb 05, 2025' },
+                  ],
+                ].map((column, colIdx) => (
+                  <div key={colIdx} className="review-blocks-column">
+                    {column.map((review, idx) => (
+                      <div key={idx} className="review-block">
+                        <div className="review-block-content">
+                          <div className="review-block-info">
+                            <img 
+                              src={`/stayscape-images/${review.img}`}
+                              loading="lazy" 
+                              alt={review.name}
+                              className="review-block-image"
+                            />
+                            <div className="review-block-attribution">
+                              <div className="medium-s">{review.name}</div>
+                              <div className="medium-xs review-block-description">{review.location}</div>
+                            </div>
+                          </div>
+                          <div className="review-block-rating">
+                            <div className="medium-xs">5.0</div>
+                            <img 
+                              src="/stayscape-images/68adc88e97b75eba13c5a1d1_Star.svg" 
+                              loading="lazy" 
+                              alt="" 
+                              className="icon review-block-rating-icon"
+                            />
+                          </div>
+                        </div>
+                        <p className="medium-s review-block-text">{review.text}</p>
+                        <div className="medium-xs review-block-date">{review.date}</div>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <a 
+              href="https://www.airbnb.com/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="black-button w-variant-d972b4a4-052a-c714-9106-c658d02bd590 w-inline-block"
+              data-wf-black-button-variant="secondary"
+            >
+              <div className="black-button-icon-wrapper w-variant-d972b4a4-052a-c714-9106-c658d02bd590">
+                <div className="button-icons">
+                  <img 
+                    src="/stayscape-images/68adc88e0d9ecf56a75aab0f_ArrowUpRight.svg" 
+                    loading="lazy" 
+                    alt="" 
+                    className="icon button-icon"
+                  />
+                  <img 
+                    src="/stayscape-images/68aed3d0db1bb90e683bba6a_ArrowUpRight.svg" 
+                    loading="lazy" 
+                    alt="" 
+                    className="icon button-icon absolute-icon"
+                  />
+                </div>
+              </div>
+              <div className="medium-s button-text w-variant-d972b4a4-052a-c714-9106-c658d02bd590">View All</div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section - From Features Component */}
+      <section id="features" className="features" ref={(el) => { if (el) sectionsRef.current[4] = el; }}>
+        <div className="w-layout-blockcontainer container big-container w-container">
+          <div className="features-content">
+            <div className="features-info">
+              <div 
+                data-wf-section-heading-variant="center-black" 
+                className="section-heading"
+              >
+                <div data-wf-caption-variant="black" className="caption">
+                  <div className="caption-shape"></div>
+                  <div className="regular-s">Features</div>
+                </div>
+                <h2 className="h2 section-title">Home Highlights</h2>
+              </div>
+              
+              <div className="overview-blocks">
+                <div className="overview-block-wrapper first-block">
+                  <div className="overview-block">
+                    <div className="overview-block-content">
+                      <div className="regular-l">2</div>
+                      <div className="overview-block-info">
+                        <h3 className="h3">Bedrooms</h3>
+                        <p className="medium-xs overview-block-description">Master and a guest bedroom</p>
+                      </div>
+                    </div>
+                    <div className="overview-block-icon-wrapper">
+                      <img 
+                        src="/stayscape-images/68adc88e1f31e1e9f33be96c_Bed.svg" 
+                        loading="lazy" 
+                        alt="" 
+                        className="icon overview-block-icon"
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="overview-block-wrapper second-block">
+                  <div className="overview-block">
+                    <div className="overview-block-content">
+                      <div className="regular-l">1</div>
+                      <div className="overview-block-info">
+                        <h3 className="h3">Bathroom</h3>
+                        <p className="medium-xs overview-block-description">Large shared bathroom</p>
+                      </div>
+                    </div>
+                    <div className="overview-block-icon-wrapper">
+                      <img 
+                        src="/stayscape-images/68adc88ecd1cce8916c4ebc2_Bathtub.svg" 
+                        loading="lazy" 
+                        alt="" 
+                        className="icon overview-block-icon"
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="overview-block-wrapper third-block">
+                  <div className="overview-block">
+                    <div className="overview-block-content">
+                      <div className="regular-l">6</div>
+                      <div className="overview-block-info">
+                        <h3 className="h3">Guests</h3>
+                        <p className="medium-xs overview-block-description">For up to 6 people</p>
+                      </div>
+                    </div>
+                    <div className="overview-block-icon-wrapper">
+                      <img 
+                        src="/stayscape-images/68adc88ed4b1b16ee3e9198e_Users.svg" 
+                        loading="lazy" 
+                        alt="" 
+                        className="icon overview-block-icon"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="amenities-info">
+              <div data-wf-caption-variant="black" className="caption">
+                <div className="caption-shape"></div>
+                <div className="regular-s">Amenities</div>
+              </div>
+              
+              <div className="feature-blocks">
+                <div className="feature-blocks-column first-column">
+                  <div 
+                    data-wf-feature-block-variant="horizontal" 
+                    className="feature-block"
+                  >
+                    <h3 className="h3 feature-block-title">Fast Wi-Fi</h3>
+                    <img 
+                      src="/stayscape-images/68adc88e929c98412b61a39a_WifiHigh.svg" 
+                      loading="lazy" 
+                      alt="" 
+                      className="icon feature-block-icon"
+                    />
+                  </div>
+                  <div 
+                    data-wf-feature-block-variant="horizontal" 
+                    className="feature-block"
+                  >
+                    <h3 className="h3 feature-block-title">Equipped Kitchen</h3>
+                    <img 
+                      src="/stayscape-images/68adc88e9a5bd9060e1f99e4_Oven.svg" 
+                      loading="lazy" 
+                      alt="" 
+                      className="icon feature-block-icon"
+                    />
+                  </div>
+                  <div 
+                    data-wf-feature-block-variant="horizontal" 
+                    className="feature-block"
+                  >
+                    <h3 className="h3 feature-block-title">Washer & Dryer</h3>
+                    <img 
+                      src="/stayscape-images/68adc88e6ed7a71438b8fb5e_WashingMachine.svg" 
+                      loading="lazy" 
+                      alt="" 
+                      className="icon feature-block-icon"
+                    />
+                  </div>
+                </div>
+                
+                <div id="w-node-e273f51d-dbf7-0379-700e-fb8fe637d26d-c31b66ee" className="feature-block-wrapper">
+                  <div 
+                    data-wf-feature-block-variant="vertical" 
+                    className="feature-block w-variant-3ec11452-0f8b-29fc-2558-fe14b480db01"
+                  >
+                    <h3 className="h3 feature-block-title w-variant-3ec11452-0f8b-29fc-2558-fe14b480db01">Complete Essentials Kit</h3>
+                    <img 
+                      src="/stayscape-images/68adc88e9206458c0cc0edb9_CoatHanger.svg" 
+                      loading="lazy" 
+                      alt="" 
+                      className="icon feature-block-icon w-variant-3ec11452-0f8b-29fc-2558-fe14b480db01"
+                    />
+                  </div>
+                </div>
+                
+                <div className="feature-blocks-column second-column">
+                  <div 
+                    data-wf-feature-block-variant="horizontal" 
+                    className="feature-block"
+                  >
+                    <h3 className="h3 feature-block-title">Air Conditioning</h3>
+                    <img 
+                      src="/stayscape-images/68adc88ecb6091c75bb946ac_Wind.svg" 
+                      loading="lazy" 
+                      alt="" 
+                      className="icon feature-block-icon"
+                    />
+                  </div>
+                  <div 
+                    data-wf-feature-block-variant="horizontal" 
+                    className="feature-block"
+                  >
+                    <h3 className="h3 feature-block-title">TV & Streaming</h3>
+                    <img 
+                      src="/stayscape-images/68adc88e13ab52118aa817b5_TelevisionSimple.svg" 
+                      loading="lazy" 
+                      alt="" 
+                      className="icon feature-block-icon"
+                    />
+                  </div>
+                  <div 
+                    data-wf-feature-block-variant="horizontal" 
+                    className="feature-block"
+                  >
+                    <h3 className="h3 feature-block-title">Safety Features</h3>
+                    <img 
+                      src="/stayscape-images/68adc88ea79d4cd09810be70_Siren.svg" 
+                      loading="lazy" 
+                      alt="" 
+                      className="icon feature-block-icon"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Location Section - From Location Component */}
+      <section id="location" className="location" ref={(el) => { if (el) sectionsRef.current[5] = el; }}>
+        <div className="w-layout-blockcontainer container w-container">
+          <div className="location-content">
+            <div className="location-info">
+              <div 
+                data-wf-section-heading-variant="center-white" 
+                className="section-heading w-variant-ea45a946-717b-1877-197d-32ffb16578e8"
+              >
+                <div 
+                  data-wf-caption-variant="white" 
+                  className="caption w-variant-9b890bc9-fd07-e206-1d1f-f651a1a92481"
+                >
+                  <div className="caption-shape w-variant-9b890bc9-fd07-e206-1d1f-f651a1a92481"></div>
+                  <div className="regular-s">Location</div>
+                </div>
+                <h2 className="h2 section-title">Where You'll Stay</h2>
+              </div>
+              
+              <div className="location-details">
+                <div id="w-node-d2509726-09cd-497c-548c-5c5e61f0c87f-c31b66ee" className="caption-info-blocks">
+                  <div className="caption-info-block-wrapper first-block">
+                    <div className="caption-info-block">
+                      <p className="medium-s caption-info-block-name">Neighborhood:</p>
+                      <p className="regular-m caption-info-block-value">Upper East Side, Manhattan</p>
+                    </div>
+                  </div>
+                  <div className="caption-info-blocks-divider"></div>
+                  <div className="caption-info-block-wrapper second-block">
+                    <div className="caption-info-block">
+                      <p className="medium-s caption-info-block-name">Address:</p>
+                      <p className="regular-m caption-info-block-value">953 5th Avenue, New York, USA</p>
+                    </div>
+                  </div>
+                  <div className="caption-info-blocks-divider"></div>
+                  <div className="caption-info-block-wrapper third-block">
+                    <div className="caption-info-block">
+                      <p className="medium-s caption-info-block-name">Floor:</p>
+                      <p className="regular-m caption-info-block-value">40th Floor With Elevator</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="map">
+              <a 
+                href="https://www.google.com/maps" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="icon-button w-inline-block"
+                data-wf-icon-button-variant="big"
+              >
+                <img 
+                  src="/stayscape-images/68adc88e8dea64e9b2c159c5_TrafficSign.svg" 
+                  loading="lazy" 
+                  alt="Direction" 
+                  className="icon icon-button-icon"
+                />
+              </a>
+              <div className="map-mark-wrapper">
+                <div className="map-mark">
+                  <img 
+                    src="/stayscape-images/68adc88e0d9ecf56a75aab2b_Buildings.svg" 
+                    loading="lazy" 
+                    alt="" 
+                    className="icon map-mark-icon"
+                  />
+                  <div className="map-mark-shape"></div>
+                </div>
+              </div>
+              <img 
+                src="/stayscape-images/68b16f7e83d311c06ce2c781_Map.avif" 
+                loading="lazy" 
+                alt="Map" 
+                className="background-image"
+              />
             </div>
           </div>
         </div>

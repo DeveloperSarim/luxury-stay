@@ -1,2 +1,22 @@
 /* Location styles are imported from original CSS file */
 /* Custom overrides if needed */
+
+/* Make Neighborhood, Address, and Floor text white (for landing page) */
+.caption-info-block-name,
+.caption-info-block-value {
+  color: #ffffff !important;
+}
+
+.caption-info-block-name {
+  font-weight: 500;
+}
+
+.caption-info-block-value {
+  font-weight: 400;
+}
+
+/* Make section title and caption white (for landing page) */
+.location .section-title,
+.location .regular-s {
+  color: #ffffff !important;
+}
