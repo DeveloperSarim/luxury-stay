@@ -16,7 +16,7 @@ export const useApiClient = () => {
         }, 10000);
       }
 
-      const res = await fetch(`https://luxury-stay-backend.vercel.app${path}`, {
+      const res = await fetch(`http://localhost:5000${path}`, {
         ...options,
         signal,
         headers: {
@@ -39,7 +39,12 @@ export const useApiClient = () => {
       return data;
     } catch (err) {
       if (err.name === 'AbortError') {
-        throw new Error('Request timeout. Please check your connection.');
+        // Don't throw timeout error for chat polling - return empty array
+        if (path.includes('/chat/messages')) {
+          return [];
+        }
+        // For other requests, throw a user-friendly error
+        throw new Error('Connection slow hai. Please wait karein.');
       }
       // Handle network errors silently for chat polling
       if (err.message && err.message.includes('Failed to fetch')) {
@@ -47,6 +52,10 @@ export const useApiClient = () => {
         // Return empty array for chat messages to prevent errors
         if (path.includes('/chat/messages')) {
           return [];
+        }
+        // For dashboard data, return null instead of throwing
+        if (path.includes('/api/reports/summary') || path.includes('/api/users')) {
+          return null;
         }
         return null;
       }

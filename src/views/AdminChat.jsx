@@ -163,14 +163,38 @@ const AdminChat = () => {
   const groupedMessagesMap = new Map();
   
   allMessages.forEach((msg) => {
-    if (msg.senderRole === 'user' && (!msg.receiverId || msg.receiverId === null)) {
+    // Check if message is from a user to admin (receiverId is null or doesn't exist)
+    const isUserToAdmin = msg.senderRole === 'user' && (!msg.receiverId || msg.receiverId === null || msg.receiverId === undefined);
+    
+    if (isUserToAdmin) {
       // User message to admin (receiverId is null)
       const senderId = (msg.senderId?._id || msg.senderId)?.toString();
-      if (!senderId) return;
+      if (!senderId) {
+        console.warn('Message without senderId:', msg);
+        return;
+      }
+      
+      // Get sender name (handle both User and Guest formats)
+      let senderName = 'Unknown User';
+      let senderEmail = '';
+      
+      if (msg.senderId) {
+        if (typeof msg.senderId === 'object') {
+          senderName = msg.senderId.name || `${msg.senderId.firstName || ''} ${msg.senderId.lastName || ''}`.trim() || 'Unknown User';
+          senderEmail = msg.senderId.email || '';
+        } else {
+          // senderId is just an ID string, we'll need to fetch it
+          senderName = 'Unknown User';
+        }
+      }
       
       if (!groupedMessagesMap.has(senderId)) {
         groupedMessagesMap.set(senderId, {
-          sender: msg.senderId,
+          sender: {
+            _id: senderId,
+            name: senderName,
+            email: senderEmail
+          },
           messages: [],
           unread: 0,
           lastMessage: null

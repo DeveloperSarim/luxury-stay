@@ -25,7 +25,7 @@ const Reviews = () => {
           controller.abort();
         }, 8000);
 
-        const response = await fetch('https://luxury-stay-backend.vercel.app/api/feedback', {
+        const response = await fetch('http://localhost:5000/api/feedback', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

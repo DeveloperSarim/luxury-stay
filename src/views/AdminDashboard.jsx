@@ -29,14 +29,25 @@ const AdminDashboard = () => {
   useEffect(() => {
     const load = async () => {
       try {
+        setError('');
         const [s, users] = await Promise.all([
           apiFetch('/api/reports/summary'),
           apiFetch('/api/users'),
         ]);
-        setSummary(s);
-        setStaff(users);
+        // Handle null responses (timeout/network errors)
+        if (s !== null) {
+          setSummary(s);
+        }
+        if (users !== null && Array.isArray(users)) {
+          setStaff(users);
+        }
       } catch (err) {
-        setError(err.message);
+        // Handle timeout errors gracefully
+        if (err.message && err.message.includes('timeout')) {
+          setError('Connection slow hai. Please wait karein ya refresh karein.');
+        } else {
+          setError(err.message || 'Data load nahi ho saka. Please try again.');
+        }
       }
     };
     load();
@@ -88,9 +99,14 @@ const AdminDashboard = () => {
       setStaff(updated);
       setForm({ name: '', email: '', password: '', role: 'receptionist' });
       setFormErrors({});
-    } catch (err) {
-      setError(err.message);
-    }
+      } catch (err) {
+        // Handle timeout errors gracefully
+        if (err.message && err.message.includes('timeout')) {
+          setError('Connection slow hai. Please wait karein ya refresh karein.');
+        } else {
+          setError(err.message || 'Staff create nahi ho saka. Please try again.');
+        }
+      }
   };
 
   const handleEditStaff = (staffMember) => {
@@ -148,12 +164,17 @@ const AdminDashboard = () => {
       setEditingStaff(null);
       setEditFormErrors({});
     } catch (err) {
-      setError(err.message);
+      // Handle timeout errors gracefully
+      if (err.message && err.message.includes('timeout')) {
+        setError('Connection slow hai. Please wait karein ya refresh karein.');
+      } else {
+        setError(err.message || 'Staff update nahi ho saka. Please try again.');
+      }
     }
   };
 
   const handleDeleteStaff = async (id) => {
-    if (!window.confirm('Kya aap is staff member ko deactivate karna chahte hain?')) {
+    if (!window.confirm('Kya aap is staff member ko permanently delete karna chahte hain? Ye action undo nahi ho sakta.')) {
       return;
     }
     setError('');
@@ -164,7 +185,12 @@ const AdminDashboard = () => {
       const updated = await apiFetch('/api/users');
       setStaff(updated);
     } catch (err) {
-      setError(err.message);
+      // Handle timeout errors gracefully
+      if (err.message && err.message.includes('timeout')) {
+        setError('Connection slow hai. Please wait karein ya refresh karein.');
+      } else {
+        setError(err.message || 'Staff delete nahi ho saka. Please try again.');
+      }
     }
   };
 
@@ -228,7 +254,7 @@ const AdminDashboard = () => {
                   <tr key={u._id}>
                     <td>{u.name}</td>
                     <td>{u.email}</td>
-                    <td>{u.role}</td>
+                    <td>{u.role === 'admin' || u.role === 'manager' ? 'manager' : u.role}</td>
                     <td>
                       <span className={`status-badge ${u.isActive ? 'status-available' : 'status-cancelled'}`}>
                         {u.isActive ? 'Active' : 'Inactive'}
@@ -236,22 +262,29 @@ const AdminDashboard = () => {
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                        <button
-                          type="button"
-                          className="table-btn"
-                          onClick={() => handleEditStaff(u)}
-                          style={{ background: '#10b981', borderColor: '#10b981' }}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          className="table-btn"
-                          onClick={() => handleDeleteStaff(u._id)}
-                          style={{ background: '#ef4444', borderColor: '#ef4444' }}
-                        >
-                          Delete
-                        </button>
+                        {u.role !== 'admin' && u.role !== 'manager' && (
+                          <>
+                            <button
+                              type="button"
+                              className="table-btn"
+                              onClick={() => handleEditStaff(u)}
+                              style={{ background: '#10b981', borderColor: '#10b981' }}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              className="table-btn"
+                              onClick={() => handleDeleteStaff(u._id)}
+                              style={{ background: '#ef4444', borderColor: '#ef4444' }}
+                            >
+                              Delete
+                            </button>
+                          </>
+                        )}
+                        {(u.role === 'admin' || u.role === 'manager') && (
+                          <span style={{ color: '#6b7280', fontSize: '14px' }}>Protected</span>
+                        )}
                       </div>
                     </td>
                   </tr>

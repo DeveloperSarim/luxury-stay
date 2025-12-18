@@ -43,7 +43,7 @@ npm run build
 
 Create `.env` file:
 ```env
-VITE_API_URL=https://luxury-stay-backend.vercel.app
+VITE_API_URL=http://localhost:5000
 ```
 
 ## Project Structure

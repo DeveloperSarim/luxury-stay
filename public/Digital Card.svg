@@ -1,0 +1,50 @@
+<svg width="800" height="500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#564ade;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#gradient)"/>
+  
+  <!-- White Card -->
+  <rect x="40" y="40" width="720" height="420" rx="24" fill="#ffffff" stroke="#e5e7eb" stroke-width="2"/>
+  
+  <!-- Title -->
+  <text x="400" y="100" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#564ade" text-anchor="middle">Virtual Booking Card</text>
+  
+  <!-- QR Code Placeholder (will be replaced) -->
+  <image id="qr-code" x="275" y="150" width="250" height="250" href="" preserveAspectRatio="xMidYMid meet"/>
+  
+  <!-- Booking Details - Left Side -->
+  <g font-family="Arial, sans-serif" font-size="18" fill="#111827">
+    <!-- Name -->
+    <text x="80" y="150" font-weight="bold" font-size="16" fill="#6b7280">Name</text>
+    <text x="80" y="175" id="guest-name" font-size="18" fill="#111827">Guest Name</text>
+    
+    <!-- Email -->
+    <text x="80" y="220" font-weight="bold" font-size="16" fill="#6b7280">Email</text>
+    <text x="80" y="245" id="guest-email" font-size="18" fill="#111827">guest@example.com</text>
+    
+    <!-- Phone -->
+    <text x="80" y="290" font-weight="bold" font-size="16" fill="#6b7280">Phone</text>
+    <text x="80" y="315" id="guest-phone" font-size="18" fill="#111827">+92 300 1234567</text>
+    
+    <!-- Room Number -->
+    <text x="80" y="360" font-weight="bold" font-size="16" fill="#6b7280">Room</text>
+    <text x="80" y="385" id="room-number" font-size="18" fill="#111827">Room 101</text>
+  </g>
+  
+  <!-- Booking Details - Right Side -->
+  <g font-family="Arial, sans-serif" font-size="18" fill="#111827">
+    <!-- Check-in Date -->
+    <text x="600" y="360" font-weight="bold" font-size="16" fill="#6b7280">Check-in</text>
+    <text x="600" y="385" id="check-in-date" font-size="18" fill="#111827">01/01/2024</text>
+    
+    <!-- Check-out Date -->
+    <text x="600" y="420" font-weight="bold" font-size="16" fill="#6b7280">Check-out</text>
+    <text x="600" y="445" id="check-out-date" font-size="18" fill="#111827">05/01/2024</text>
+  </g>
+</svg>

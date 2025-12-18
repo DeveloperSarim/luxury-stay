@@ -4,7 +4,11 @@ export const validateEmail = (email) => {
   if (!email) {
     return 'Email zaroori hai';
   }
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // Check if email starts with symbol or dot
+  if (/^[^a-zA-Z0-9]/.test(email.trim())) {
+    return 'Email symbol ya dot se shuru nahi ho sakta';
+  }
+  const emailRegex = /^[a-zA-Z0-9][a-zA-Z0-9._-]*@[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,}$/;
   if (!emailRegex.test(email)) {
     return 'Valid email address dalain (e.g., user@example.com)';
   }
@@ -52,16 +56,20 @@ export const validateName = (name) => {
   if (!name || name.trim().length === 0) {
     return 'Name zaroori hai';
   }
+  // Check if name starts with symbol or dot
+  if (/^[^a-zA-Z\u0600-\u06FF]/.test(name.trim())) {
+    return 'Name symbol ya dot se shuru nahi ho sakta';
+  }
   if (name.trim().length < 2) {
     return 'Name kam se kam 2 characters ka hona chahiye';
   }
   if (name.length > 50) {
     return 'Name zyada lamba hai (max 50 characters)';
   }
-  // Allow letters, spaces, and common name characters
-  const nameRegex = /^[a-zA-Z\u0600-\u06FF\s\.\'\-]+$/;
+  // Allow only letters and spaces (no symbols, no dots)
+  const nameRegex = /^[a-zA-Z\u0600-\u06FF\s]+$/;
   if (!nameRegex.test(name)) {
-    return 'Name mein sirf letters, spaces, aur common characters allowed hain';
+    return 'Name mein sirf letters aur spaces allowed hain (symbols allowed nahi)';
   }
   return '';
 };
