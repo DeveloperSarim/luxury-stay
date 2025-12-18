@@ -128,9 +128,9 @@ const Login = () => {
           </button>
         </form>
         <p className="switch-text" style={{ textAlign: 'center', marginTop: '10px' }}>
-          <a href="/forgot-password" style={{ color: '#564ade', textDecoration: 'underline' }}>
+          {/* <a href="/forgot-password" style={{ color: '#564ade', textDecoration: 'underline' }}>
             Forgot Password?
-          </a>
+          </a> */}
         </p>
         <p className="switch-text">
           First time here? <a href="/register">Create account</a>
