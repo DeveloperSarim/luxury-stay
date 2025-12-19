@@ -425,6 +425,7 @@ const ReceptionDashboard = () => {
               onChange={(e) => handleResFormChange('checkInDate', e.target.value)}
               onBlur={(e) => handleResFormChange('checkInDate', e.target.value)}
               required
+              min={new Date().toISOString().split('T')[0]}
               className={resFormErrors.checkInDate ? 'input-error' : ''}
             />
             {resFormErrors.checkInDate && <p className="field-error-text">{resFormErrors.checkInDate}</p>}
@@ -436,6 +437,7 @@ const ReceptionDashboard = () => {
               onChange={(e) => handleResFormChange('checkOutDate', e.target.value)}
               onBlur={(e) => handleResFormChange('checkOutDate', e.target.value)}
               required
+              min={resForm.checkInDate || new Date().toISOString().split('T')[0]}
               className={resFormErrors.checkOutDate ? 'input-error' : ''}
             />
             {resFormErrors.checkOutDate && <p className="field-error-text">{resFormErrors.checkOutDate}</p>}

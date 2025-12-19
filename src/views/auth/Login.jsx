@@ -94,7 +94,7 @@ const Login = () => {
           <img src="/Luxury-Stay-Logo.png" alt="Luxury Stay" className="login-logo" />
         </div>
         <h1>LuxuryStay HMS</h1>
-        <p className="subtitle">Secure staff login</p>
+        <p className="subtitle">Secure Portal login</p>
         <form onSubmit={handleSubmit}>
           <div className="field">
             <label>Email</label>

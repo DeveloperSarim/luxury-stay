@@ -19,6 +19,7 @@ const ReceptionReservations = () => {
   });
   const [formErrors, setFormErrors] = useState({});
   const [error, setError] = useState('');
+  const [toast, setToast] = useState({ show: false, message: '', type: 'info' });
   const [qrScannerOpen, setQrScannerOpen] = useState(false);
   const [qrInput, setQrInput] = useState('');
   const [scannedReservation, setScannedReservation] = useState(null);
@@ -132,6 +133,189 @@ const ReceptionReservations = () => {
       await loadData();
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  // Toast notification function
+  const showToast = (message, type = 'info') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast({ show: false, message: '', type: 'info' });
+    }, 3000);
+  };
+
+  const downloadDigitalCard = async (bookingId) => {
+    try {
+      setError('');
+      
+      // Show generating toast
+      showToast('Digital card generate ho raha hai...', 'info');
+      
+      // Get booking details
+      const booking = reservations.find(b => b._id === bookingId);
+      if (!booking) {
+        throw new Error('Booking not found');
+      }
+
+      // Get QR code from backend
+      const qrData = await apiFetch(`/api/reservations/${bookingId}/qr-code`);
+      if (!qrData || !qrData.qrCode) {
+        throw new Error('QR code generate nahi ho saka');
+      }
+
+      // Load SVG template
+      const svgResponse = await fetch('/Digital Card.svg');
+      let svgText = await svgResponse.text();
+
+      // Use QR code data URL from backend
+      const qrCodeDataUrl = qrData.qrCode;
+
+      // Get booking details
+      const guestName = booking.guest 
+        ? `${booking.guest.firstName || ''} ${booking.guest.lastName || ''}`.trim() 
+        : 'Guest';
+      const guestEmail = booking.guest?.email || '';
+      const guestPhone = booking.guest?.phone || '';
+      const roomNumber = booking.room?.roomNumber || 'N/A';
+      const checkIn = new Date(booking.checkInDate).toLocaleDateString('en-GB');
+      const checkOut = new Date(booking.checkOutDate).toLocaleDateString('en-GB');
+
+      // Replace QR code image in SVG
+      svgText = svgText.replace(
+        /<image[^>]*id="qr-code"[^>]*>/i,
+        `<image id="qr-code" x="275" y="150" width="250" height="250" href="${qrCodeDataUrl}" preserveAspectRatio="xMidYMid meet"/>`
+      );
+
+      // Replace text content - multiple methods to ensure replacement
+      // Method 1: Replace by ID attribute with full text element
+      svgText = svgText.replace(
+        /<text[^>]*id="guest-name"[^>]*>Guest Name<\/text>/i,
+        `<text x="80" y="175" id="guest-name" font-size="18" fill="#111827">${guestName}</text>`
+      );
+      svgText = svgText.replace(
+        /<text[^>]*id="guest-email"[^>]*>guest@example\.com<\/text>/i,
+        `<text x="80" y="245" id="guest-email" font-size="18" fill="#111827">${guestEmail}</text>`
+      );
+      svgText = svgText.replace(
+        /<text[^>]*id="guest-phone"[^>]*>\+92 300 1234567<\/text>/i,
+        `<text x="80" y="315" id="guest-phone" font-size="18" fill="#111827">${guestPhone || 'N/A'}</text>`
+      );
+      svgText = svgText.replace(
+        /<text[^>]*id="room-number"[^>]*>Room 101<\/text>/i,
+        `<text x="80" y="385" id="room-number" font-size="18" fill="#111827">Room ${roomNumber}</text>`
+      );
+      svgText = svgText.replace(
+        /<text[^>]*id="check-in-date"[^>]*>01\/01\/2024<\/text>/i,
+        `<text x="600" y="385" id="check-in-date" font-size="18" fill="#111827">${checkIn}</text>`
+      );
+      svgText = svgText.replace(
+        /<text[^>]*id="check-out-date"[^>]*>05\/01\/2024<\/text>/i,
+        `<text x="600" y="445" id="check-out-date" font-size="18" fill="#111827">${checkOut}</text>`
+      );
+      
+      // Method 2: Direct text replacement (fallback)
+      svgText = svgText.replace(/Guest Name/g, guestName);
+      svgText = svgText.replace(/guest@example\.com/g, guestEmail);
+      svgText = svgText.replace(/\+92 300 1234567/g, guestPhone || 'N/A');
+      svgText = svgText.replace(/Room 101/g, `Room ${roomNumber}`);
+      svgText = svgText.replace(/01\/01\/2024/g, checkIn);
+      svgText = svgText.replace(/05\/01\/2024/g, checkOut);
+
+      // Convert SVG to canvas first, then to image
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      // Set canvas size
+      canvas.width = 800;
+      canvas.height = 500;
+      
+      // Create SVG data URL with proper encoding
+      const svgBlob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+      const reader = new FileReader();
+      
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('Image conversion timeout'));
+        }, 15000); // 15 second timeout
+        
+        reader.onload = () => {
+          const svgDataUrl = reader.result;
+          
+          img.onload = () => {
+            clearTimeout(timeout);
+            try {
+              // Draw SVG to canvas
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              
+              // Convert canvas to image data URL
+              const canvasDataUrl = canvas.toDataURL('image/png');
+              
+              // Generate PDF using jsPDF
+              import('jspdf').then(({ jsPDF }) => {
+                try {
+                  const doc = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'mm',
+                    format: [210, 148] // A5 landscape
+                  });
+
+                  // Calculate dimensions to fit the page
+                  const pageWidth = 210;
+                  const pageHeight = 148;
+                  const imgWidth = pageWidth;
+                  const imgHeight = (canvas.height * pageWidth) / canvas.width;
+                  
+                  // Center the image if it's smaller than page
+                  const xOffset = 0;
+                  const yOffset = imgHeight < pageHeight ? (pageHeight - imgHeight) / 2 : 0;
+                  
+                  // Add canvas image to PDF
+                  doc.addImage(canvasDataUrl, 'PNG', xOffset, yOffset, imgWidth, imgHeight);
+
+                  // Save PDF
+                  doc.save(`digital-card-${bookingId}.pdf`);
+                  
+                  // Show success toast
+                  showToast('Digital card successfully download ho gaya!', 'success');
+                  resolve();
+                } catch (pdfError) {
+                  console.error('PDF generation error:', pdfError);
+                  reject(new Error('PDF generate karne mein error: ' + pdfError.message));
+                }
+              }).catch((importError) => {
+                console.error('jsPDF import error:', importError);
+                reject(new Error('PDF library load nahi ho saka'));
+              });
+            } catch (e) {
+              console.error('Canvas processing error:', e);
+              reject(e);
+            }
+          };
+          
+          img.onerror = (error) => {
+            clearTimeout(timeout);
+            console.error('Image load error:', error);
+            reject(new Error('SVG image load nahi ho saka'));
+          };
+          
+          // Load SVG data URL
+          img.src = svgDataUrl;
+        };
+        
+        reader.onerror = () => {
+          clearTimeout(timeout);
+          reject(new Error('SVG file read nahi ho saka'));
+        };
+        
+        // Read SVG as data URL
+        reader.readAsDataURL(svgBlob);
+      });
+    } catch (err) {
+      console.error('Digital card download error:', err);
+      showToast(err.message || 'Digital card download karne mein error aaya', 'error');
+      setError(err.message || 'Digital card download karne mein error aaya');
     }
   };
 
@@ -681,24 +865,39 @@ const ReceptionReservations = () => {
                       </span>
                     </td>
                     <td>
-                      {r.status === 'reserved' && (
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                         <button
                           type="button"
                           className="table-btn"
-                          onClick={() => handleCheckIn(r._id)}
+                          onClick={() => downloadDigitalCard(r._id)}
+                          style={{ 
+                            background: '#564ade', 
+                            borderColor: '#564ade',
+                            fontSize: '12px',
+                            padding: '6px 12px'
+                          }}
                         >
-                          Check-in
+                          📥 Download Card
                         </button>
-                      )}
-                      {r.status === 'checked_in' && (
-                        <button
-                          type="button"
-                          className="table-btn"
-                          onClick={() => handleCheckOut(r._id)}
-                        >
-                          Check-out
-                        </button>
-                      )}
+                        {r.status === 'reserved' && (
+                          <button
+                            type="button"
+                            className="table-btn"
+                            onClick={() => handleCheckIn(r._id)}
+                          >
+                            Check-in
+                          </button>
+                        )}
+                        {r.status === 'checked_in' && (
+                          <button
+                            type="button"
+                            className="table-btn"
+                            onClick={() => handleCheckOut(r._id)}
+                          >
+                            Check-out
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -754,6 +953,7 @@ const ReceptionReservations = () => {
               onChange={(e) => handleFormChange('checkInDate', e.target.value)}
               onBlur={(e) => handleFormChange('checkInDate', e.target.value)}
               required
+              min={new Date().toISOString().split('T')[0]}
               className={formErrors.checkInDate ? 'input-error' : ''}
             />
             {formErrors.checkInDate && <p className="field-error-text">{formErrors.checkInDate}</p>}
@@ -765,6 +965,7 @@ const ReceptionReservations = () => {
               onChange={(e) => handleFormChange('checkOutDate', e.target.value)}
               onBlur={(e) => handleFormChange('checkOutDate', e.target.value)}
               required
+              min={form.checkInDate || new Date().toISOString().split('T')[0]}
               className={formErrors.checkOutDate ? 'input-error' : ''}
             />
             {formErrors.checkOutDate && <p className="field-error-text">{formErrors.checkOutDate}</p>}
@@ -788,6 +989,33 @@ const ReceptionReservations = () => {
         </form>
         {error && <p className="error-text">{error}</p>}
       </section>
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            background: toast.type === 'success' ? '#10b981' : toast.type === 'error' ? '#ef4444' : '#564ade',
+            color: '#ffffff',
+            padding: '12px 20px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            zIndex: 10000,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            minWidth: '250px',
+            animation: 'slideIn 0.3s ease-out'
+          }}
+        >
+          <span style={{ fontSize: '18px' }}>
+            {toast.type === 'success' ? '✓' : toast.type === 'error' ? '✕' : 'ℹ'}
+          </span>
+          <span style={{ fontSize: '14px', fontWeight: 500 }}>{toast.message}</span>
+        </div>
+      )}
     </div>
   );
 };

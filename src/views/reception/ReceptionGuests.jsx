@@ -25,12 +25,6 @@ const ReceptionGuests = () => {
     phone: '',
   });
   const [editFormErrors, setEditFormErrors] = useState({});
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [passwordForm, setPasswordForm] = useState({
-    password: '',
-    confirmPassword: '',
-  });
-  const [passwordErrors, setPasswordErrors] = useState({});
   const [showEditModal, setShowEditModal] = useState(false);
   const [error, setError] = useState('');
 
@@ -189,41 +183,6 @@ const ReceptionGuests = () => {
     }
   };
 
-  const handleChangePassword = async (e) => {
-    e.preventDefault();
-    setError('');
-    
-    // Validate password
-    const passwordError = validatePassword(passwordForm.password);
-    const confirmPasswordError = passwordForm.password !== passwordForm.confirmPassword 
-      ? 'Passwords match nahi kar rahe' 
-      : '';
-    
-    const newErrors = {
-      password: passwordError,
-      confirmPassword: confirmPasswordError,
-    };
-    
-    setPasswordErrors(newErrors);
-    
-    if (passwordError || confirmPasswordError) {
-      return;
-    }
-    
-    try {
-      await apiFetch(`/api/guests/${editingGuest._id}/change-password`, {
-        method: 'PUT',
-        body: JSON.stringify({ password: passwordForm.password }),
-      });
-      setShowPasswordModal(false);
-      setPasswordForm({ password: '', confirmPassword: '' });
-      setPasswordErrors({});
-      alert('Password successfully changed!');
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
   const isAdmin = user?.role === 'admin' || user?.role === 'manager';
 
   return (
@@ -293,19 +252,6 @@ const ReceptionGuests = () => {
                             style={{ background: '#10b981', borderColor: '#10b981' }}
                           >
                             Edit
-                          </button>
-                          <button
-                            type="button"
-                            className="table-btn"
-                            onClick={() => {
-                              setEditingGuest(g);
-                              setShowPasswordModal(true);
-                              setPasswordForm({ password: '', confirmPassword: '' });
-                              setPasswordErrors({});
-                            }}
-                            style={{ background: '#3b82f6', borderColor: '#3b82f6' }}
-                          >
-                            Change Password
                           </button>
                           <button
                             type="button"
